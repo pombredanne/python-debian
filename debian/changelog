@@ -1,3 +1,24 @@
+python-debian (0.1.18+squeeze1) stable; urgency=low
+
+  * Allow ':' as the first character of a value.  This fixes an
+    implementation error where the paragraph
+
+      Foo: : bar
+
+    would be interpreted as
+
+      {'Foo:': 'bar'}
+
+    by the Python-native parser, while it would be correctly interpreted
+    as
+
+      {'Foo': ': bar'}
+
+    by both the apt_pkg parser and the Python email library.
+    (Closes: #597249)
+
+ -- John Wright <jsw@debian.org>  Wed, 28 Dec 2011 14:50:57 -0800
+
 python-debian (0.1.18) unstable; urgency=low
 
   * Support installation together with older versions of python-apt.
