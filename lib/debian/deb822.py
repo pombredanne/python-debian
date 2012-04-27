@@ -875,7 +875,7 @@ class PkgRelation(object):
     # just parse as much as we need to split the various parts composing a
     # dependency, checking their correctness wrt policy is out of scope
     __dep_RE = re.compile(
-            r'^\s*(?P<name>[a-zA-Z0-9.+\-]{2,})'
+            r'^\s*(?P<name>[a-zA-Z0-9.+\-]{2,})(:(?P<foreignarch>any))?'
             r'(\s*\(\s*(?P<relop>[>=<]+)\s*'
             r'(?P<version>[0-9a-zA-Z:\-+~.]+)\s*\))?'
             r'(\s*\[(?P<archs>[\s!\w\-]+)\])?\s*$')
@@ -903,6 +903,7 @@ class PkgRelation(object):
             if match:
                 parts = match.groupdict()
                 d = { 'name': parts['name'] }
+                d['foreign-arch'] = parts['foreignarch'] == 'any'
                 if not (parts['relop'] is None or parts['version'] is None):
                     d['version'] = (parts['relop'], parts['version'])
                 else:
