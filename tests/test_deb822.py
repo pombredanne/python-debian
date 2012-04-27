@@ -852,6 +852,17 @@ Description: python modules to work with Debian-related data formats
         self._test_iter_paragraphs_comments(paragraphs)
 
 
+def rel(dict_):
+    '''Helper for making PkgRelation dicts'''
+    if 'version' not in dict_:
+        dict_['version'] = None
+    if 'arch' not in dict_:
+        dict_['arch'] = None
+    if 'foreign-arch' not in dict_:
+        dict_['foreign-arch'] = False
+    return dict_
+
+
 class TestPkgRelations(unittest.TestCase):
 
     def test_packages(self):
@@ -860,39 +871,39 @@ class TestPkgRelations(unittest.TestCase):
         pkg1 = next(pkgs)
         rel1 = {'breaks': [],
                 'conflicts': [],
-                'depends': [[{'name': 'file', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'libc6', 'version': ('>=', '2.7-1'), 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'libpaper1', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'psutils', 'version': None, 'arch': None, 'foreign-arch': False}]],
+                'depends': [[rel({'name': 'file'})],
+                    [rel({'name': 'libc6', 'version': ('>=', '2.7-1')})],
+                    [rel({'name': 'libpaper1'})],
+                    [rel({'name': 'psutils'})]],
                 'enhances': [],
                 'pre-depends': [],
                 'provides': [],
-                'recommends': [[{'name': 'bzip2', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'lpr', 'version': None, 'arch': None, 'foreign-arch': False},
-                        {'name': 'rlpr', 'version': None, 'arch': None, 'foreign-arch': False},
-                        {'name': 'cupsys-client', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'wdiff', 'version': None, 'arch': None, 'foreign-arch': False}]],
+                'recommends': [[rel({'name': 'bzip2'})],
+                    [rel({'name': 'lpr'}),
+                        rel({'name': 'rlpr'}),
+                        rel({'name': 'cupsys-client'})],
+                    [rel({'name': 'wdiff'})]],
                 'replaces': [],
-                'suggests': [[{'name': 'emacsen-common', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'ghostscript', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'graphicsmagick-imagemagick-compat', 'version': None, 'arch': None, 'foreign-arch': False},
-                        {'name': 'imagemagick', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'groff', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'gv', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'html2ps', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 't1-cyrillic', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'texlive-base-bin', 'version': None, 'arch': None, 'foreign-arch': False}]]}
+                'suggests': [[rel({'name': 'emacsen-common'})],
+                    [rel({'name': 'ghostscript'})],
+                    [rel({'name': 'graphicsmagick-imagemagick-compat'}),
+                        rel({'name': 'imagemagick'})],
+                    [rel({'name': 'groff'})],
+                    [rel({'name': 'gv'})],
+                    [rel({'name': 'html2ps'})],
+                    [rel({'name': 't1-cyrillic'})],
+                    [rel({'name': 'texlive-base-bin'})]]}
         self.assertEqual(rel1, pkg1.relations)
         pkg2 = next(pkgs)
         rel2 = {'breaks': [],
                 'conflicts': [],
-                'depends': [[{'name': 'lrzsz', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'openssh-client', 'version': None, 'arch': None, 'foreign-arch': False},
-                        {'name': 'telnet', 'version': None, 'arch': None, 'foreign-arch': False},
-                        {'name': 'telnet-ssl', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'libc6', 'version': ('>=', '2.6.1-1'), 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'libncurses5', 'version': ('>=', '5.6'), 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'libreadline5', 'version': ('>=', '5.2'), 'arch': None, 'foreign-arch': False}]],
+                'depends': [[rel({'name': 'lrzsz'})],
+                    [rel({'name': 'openssh-client'}),
+                        rel({'name': 'telnet'}),
+                        rel({'name': 'telnet-ssl'})],
+                    [rel({'name': 'libc6', 'version': ('>=', '2.6.1-1')})],
+                    [rel({'name': 'libncurses5', 'version': ('>=', '5.6')})],
+                    [rel({'name': 'libreadline5', 'version': ('>=', '5.2')})]],
                 'enhances': [],
                 'pre-depends': [],
                 'provides': [],
@@ -901,20 +912,20 @@ class TestPkgRelations(unittest.TestCase):
                 'suggests': []}
         self.assertEqual(rel2, pkg2.relations)
         pkg3 = next(pkgs)
-        dep3 = [[{'arch': None, 'name': 'dcoprss', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kdenetwork-kfile-plugins', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kdict', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kdnssd', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kget', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'knewsticker', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kopete', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kpf', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kppp', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'krdc', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'krfb', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'ksirc', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'kwifimanager', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}],
-            [{'arch': None, 'name': 'librss1', 'version': ('>=', '4:3.5.9-2'), 'foreign-arch': False}]]
+        dep3 = [[rel({'name': 'dcoprss', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kdenetwork-kfile-plugins', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kdict', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kdnssd', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kget', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'knewsticker', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kopete', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kpf', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kppp', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'krdc', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'krfb', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'ksirc', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'kwifimanager', 'version': ('>=', '4:3.5.9-2')})],
+                [rel({'name': 'librss1', 'version': ('>=', '4:3.5.9-2')})]]
         self.assertEqual(dep3, pkg3.relations['depends'])
         f.close()
 
@@ -937,40 +948,45 @@ class TestPkgRelations(unittest.TestCase):
         pkg1 = next(pkgs)
         rel1 = {'build-conflicts': [],
                 'build-conflicts-indep': [],
-                'build-depends': [[{'name': 'apache2-src', 'version': ('>=', '2.2.9'), 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'libaprutil1-dev', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'arch': [(False, 'kfreebsd-i386'), (False, 'kfreebsd-amd64'), (False, 'hurd-i386')],
-                        'name': 'libcap-dev',
-                        'version': None, 'foreign-arch': False}],
-                    [{'name': 'autoconf', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'debhelper', 'version': ('>>', '5.0.0'), 'arch': None, 'foreign-arch': False}]],
+                'build-depends': [
+                    [rel({'name': 'apache2-src', 'version': ('>=', '2.2.9')})],
+                    [rel({'name': 'libaprutil1-dev'})],
+                    [rel({'name': 'libcap-dev',
+                          'arch': [(False, 'kfreebsd-i386'),
+                                   (False, 'kfreebsd-amd64'),
+                                   (False, 'hurd-i386')]})],
+                    [rel({'name': 'autoconf'})],
+                    [rel({'name': 'debhelper', 'version': ('>>', '5.0.0')})]],
                 'build-depends-indep': [],
-                'binary': [[{'name': 'apache2-mpm-itk', 'version': None, 'arch': None, 'foreign-arch': False}]]}
+                'binary': [[rel({'name': 'apache2-mpm-itk'})]]}
         self.assertEqual(rel1, pkg1.relations)
         pkg2 = next(pkgs)
         rel2 = {'build-conflicts': [],
                 'build-conflicts-indep': [],
-                'build-depends': [[{'name': 'dpkg-dev', 'version': ('>=', '1.13.9'), 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'autoconf', 'version': ('>=', '2.13'), 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'bash', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'bison', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'flex', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'gettext', 'version': None, 'arch': None, 'foreign-arch': True}],
-                    [{'name': 'texinfo', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'arch': [(True, 'hppa')], 'name': 'expect-tcl8.3', 'version': ('>=', '5.32.2'), 'foreign-arch': False}],
-                    [{'name': 'dejagnu', 'version': ('>=', '1.4.2-1.1'), 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'dpatch', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'file', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'bzip2', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'lsb-release', 'version': None, 'arch': None, 'foreign-arch': False}]],
+                'build-depends': [
+                    [rel({'name': 'dpkg-dev', 'version': ('>=', '1.13.9')})],
+                    [rel({'name': 'autoconf', 'version': ('>=', '2.13')})],
+                    [rel({'name': 'bash'})],
+                    [rel({'name': 'bison'})],
+                    [rel({'name': 'flex'})],
+                    [rel({'name': 'gettext', 'foreign-arch': True})],
+                    [rel({'name': 'texinfo'})],
+                    [rel({'name': 'expect-tcl8.3', 'arch': [(True, 'hppa')],
+                          'version': ('>=', '5.32.2')})],
+                    [rel({'name': 'dejagnu', 'version': ('>=', '1.4.2-1.1')})],
+                    [rel({'name': 'dpatch'})],
+                    [rel({'name': 'file'})],
+                    [rel({'name': 'bzip2'})],
+                    [rel({'name': 'lsb-release'})]],
                 'build-depends-indep': [],
-                'binary': [[{'name': 'binutils', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'binutils-dev', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'binutils-multiarch', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'binutils-hppa64', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'binutils-spu', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'binutils-doc', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'binutils-source', 'version': None, 'arch': None, 'foreign-arch': False}]]}
+                'binary': [
+                    [rel({'name': 'binutils'})],
+                    [rel({'name': 'binutils-dev'})],
+                    [rel({'name': 'binutils-multiarch'})],
+                    [rel({'name': 'binutils-hppa64'})],
+                    [rel({'name': 'binutils-spu'})],
+                    [rel({'name': 'binutils-doc'})],
+                    [rel({'name': 'binutils-source'})]]}
         self.assertEqual(rel2, pkg2.relations)
         f.close()
 
