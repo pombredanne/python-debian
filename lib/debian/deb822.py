@@ -881,8 +881,12 @@ class PkgRelation(object):
     # XXX *NOT* a real dependency parser, and that is not even a goal here, we
     # just parse as much as we need to split the various parts composing a
     # dependency, checking their correctness wrt policy is out of scope
-    __dep_RE = re.compile( \
-            r'^\s*(?P<name>[a-zA-Z0-9.+\-]{2,})(\s*\(\s*(?P<relop>[>=<]+)\s*(?P<version>[0-9a-zA-Z:\-+~.]+)\s*\))?(\s*\[(?P<archs>[\s!\w\-]+)\])?\s*$')
+    __dep_RE = re.compile(
+            r'^\s*(?P<name>[a-zA-Z0-9.+\-]{2,})'
+            r'(\s*\(\s*(?P<relop>[>=<]+)\s*'
+            r'(?P<version>[0-9a-zA-Z:\-+~.]+)\s*\))?'
+            r'(\s*\[(?P<archs>[\s!\w\-]+)\])?\s*'
+            r'$')
     __comma_sep_RE = re.compile(r'\s*,\s*')
     __pipe_sep_RE = re.compile(r'\s*\|\s*')
     __blank_sep_RE = re.compile(r'\s*')
