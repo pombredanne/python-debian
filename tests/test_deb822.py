@@ -955,7 +955,7 @@ class TestPkgRelations(unittest.TestCase):
                     [{'name': 'bash', 'version': None, 'arch': None, 'foreign-arch': False}],
                     [{'name': 'bison', 'version': None, 'arch': None, 'foreign-arch': False}],
                     [{'name': 'flex', 'version': None, 'arch': None, 'foreign-arch': False}],
-                    [{'name': 'gettext', 'version': None, 'arch': None, 'foreign-arch': False}],
+                    [{'name': 'gettext', 'version': None, 'arch': None, 'foreign-arch': True}],
                     [{'name': 'texinfo', 'version': None, 'arch': None, 'foreign-arch': False}],
                     [{'arch': [(True, 'hppa')], 'name': 'expect-tcl8.3', 'version': ('>=', '5.32.2'), 'foreign-arch': False}],
                     [{'name': 'dejagnu', 'version': ('>=', '1.4.2-1.1'), 'arch': None, 'foreign-arch': False}],
