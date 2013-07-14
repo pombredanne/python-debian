@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e -u
+cp -a tests/ "$ADTTMP"
+cd "$ADTTMP/tests/"
+export PYTHONWARNINGS=d
+for py in $(py3versions -i); do
+  # text mode file opening is locale dependent so try both ASCII and UTF-8
+  LC_ALL=C $py /usr/bin/nosetests3 --verbose --exe 2>&1
+  LC_ALL=C.UTF-8 $py /usr/bin/nosetests3 --verbose --exe 2>&1
+done

@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e -u
+cp -a tests/ "$ADTTMP"
+cd "$ADTTMP/tests/"
+export PYTHONWARNINGS=d
+# test suite requires python2.7
+LC_ALL=C python2.7 /usr/bin/nosetests --verbose --exe 2>&1
+LC_ALL=C.UTF-8 python2.7 /usr/bin/nosetests --verbose --exe 2>&1

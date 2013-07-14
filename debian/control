@@ -14,6 +14,7 @@ Standards-Version: 3.9.5
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-python-debian/python-debian.git
 Vcs-Git: git://anonscm.debian.org/pkg-python-debian/python-debian.git
 X-Python-Version: >= 2.5
+XS-Testsuite: autopkgtest
 
 Package: python-debian
 Architecture: all
