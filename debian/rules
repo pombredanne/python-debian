@@ -75,6 +75,7 @@ binary-indep: build install
 	dh_compress -Xexamples
 	dh_fixperms
 	dh_python2
+	dh_python3
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol

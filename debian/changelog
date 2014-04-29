@@ -1,3 +1,11 @@
+python-debian (0.1.21+nmu3) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Add support for xz-compressed packages. (Closes: #506861)
+  * Byte-compile python modules for python3-debian. (Closes: #709935)
+
+ -- Fathi Boudra <fabo@debian.org>  Tue, 29 Apr 2014 20:32:47 +0300
+
 python-debian (0.1.21+nmu2) unstable; urgency=low
 
   * Non-maintainer upload.
