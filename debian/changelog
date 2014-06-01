@@ -10,6 +10,7 @@ python-debian (0.1.22) UNRELEASED; urgency=low
 
   [ Stuart Prescott ]
   * Add myself to Uploaders.
+  * Change Vcs-* URLs to canonical locations.
 
  -- John Wright <jsw@debian.org>  Mon, 08 Oct 2012 00:41:32 -0700
 
