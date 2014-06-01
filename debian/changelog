@@ -1,11 +1,15 @@
 python-debian (0.1.22) UNRELEASED; urgency=low
 
-  * Acknowledge NMU.  (Thanks for your work, Colin!)
+  [ John Wright ]
+  * Acknowledge NMUs.  (Thanks for your work, Colin and Fathi!)
   * arfile.ArFile.extractfile: Return a matching member even if it is
     not the first one in the archive.  Thanks to Mika Eloranta for the
     report and patch. (Closes: #689313)
   * deb822.Deb822.iter_paragraphs: Actually work with string input.
     Thanks to Stefano Rivera for the patch. (Closes: #647455)
+
+  [ Stuart Prescott ]
+  * Add myself to Uploaders.
 
  -- John Wright <jsw@debian.org>  Mon, 08 Oct 2012 00:41:32 -0700
 

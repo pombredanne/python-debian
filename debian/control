@@ -7,7 +7,8 @@ Uploaders: Adeodato Simó <dato@net.com.org.es>,
  James Westby <jw+debian@jameswestby.net>,
  Reinhard Tartler <siretart@tauware.de>,
  Stefano Zacchiroli <zack@debian.org>,
- John Wright <jsw@debian.org>
+ John Wright <jsw@debian.org>,
+ Stuart Prescott <stuart@debian.org>
 Build-Depends: debhelper (>= 5.0.37.2), python (>= 2.6.6-3~), python3 (>= 3.1.2-8~), python-setuptools, python3-setuptools, python-chardet, python3-chardet, python-six, python3-six
 Standards-Version: 3.8.4
 Vcs-Browser: http://git.debian.org/?p=pkg-python-debian/python-debian.git
