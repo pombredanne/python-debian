@@ -116,9 +116,11 @@ class TestDebFile(unittest.TestCase):
         self.debname = 'test.deb'
         self.broken_debname = 'test-broken.deb'
         self.bz2_debname = 'test-bz2.deb'
+        self.xz_debname = 'test-xz.deb'
         uudecode('test.deb.uu', self.debname)
         uudecode('test-broken.deb.uu', self.broken_debname)
         uudecode('test-bz2.deb.uu', self.bz2_debname)
+        uudecode('test-xz.deb.uu', self.xz_debname)
 
         self.debname = 'test.deb'
         uu_deb = open('test.deb.uu', 'rb')
@@ -145,6 +147,14 @@ class TestDebFile(unittest.TestCase):
         self.assertEqual(os.path.normpath(bz2_deb.data.tgz().getnames()[10]),
                          os.path.normpath('./usr/share/locale/bg/'))
         bz2_deb.close()
+
+    def test_tar_xz(self):
+        xz_deb = debfile.DebFile(self.xz_debname)
+        # random test on the data part (which is xz), just to check if we
+        # can access its content
+        self.assertEqual(os.path.normpath(xz_deb.data.tgz().getnames()[10]),
+                         os.path.normpath('./usr/share/locale/bg/'))
+        xz_deb.close()
 
     def test_data_names(self):
         """ test for file list equality """ 

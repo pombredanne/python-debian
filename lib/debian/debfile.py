@@ -20,6 +20,7 @@ from __future__ import absolute_import, print_function
 import gzip
 import tarfile
 import sys
+import os.path
 
 from debian.arfile import ArFile, ArError
 from debian.changelog import Changelog
@@ -27,7 +28,7 @@ from debian.deb822 import Deb822
 
 DATA_PART = 'data.tar'      # w/o extension
 CTRL_PART = 'control.tar'
-PART_EXTS = ['gz', 'bz2']   # possible extensions
+PART_EXTS = ['gz', 'bz2', 'xz']  # possible extensions
 INFO_PART = 'debian-binary'
 MAINT_SCRIPTS = ['preinst', 'postinst', 'prerm', 'postrm', 'config']
 
@@ -65,20 +66,42 @@ class DebPart(object):
     def tgz(self):
         """Return a TarFile object corresponding to this part of a .deb
         package.
-        
+
         Despite the name, this method gives access to various kind of
         compressed tar archives, not only gzipped ones.
         """
 
         if self.__tgz is None:
             name = self.__member.name
-            if name.endswith('.gz'):
-                gz = gzip.GzipFile(fileobj=self.__member, mode='r')
-                self.__tgz = tarfile.TarFile(fileobj=gz, mode='r')
-            elif name.endswith('.bz2'):
-                # Tarfile's __init__ doesn't allow for r:bz2 modes, but the
-                # open() classmethod does ...
-                self.__tgz = tarfile.open(fileobj=self.__member, mode='r:bz2')
+            extension = os.path.splitext(name)[1][1:]
+            if extension in PART_EXTS:
+                if sys.version_info < (3, 3) and extension == 'xz':
+                    try:
+                        import subprocess
+                        import signal
+                        import io
+
+                        proc = subprocess.Popen(['unxz', '--stdout'],
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                universal_newlines=False,
+                                preexec_fn=lambda:
+                                signal.signal(signal.SIGPIPE, signal.SIG_DFL))
+                    except (OSError, ValueError) as e:
+                        raise DebError("%s" % e)
+
+                    data = proc.communicate(self.__member.read())[0]
+                    if proc.returncode != 0:
+                        raise DebError("command has failed with code '%s'" % \
+                                       proc.returncode)
+
+                    buffer = io.BytesIO(data)
+                else:
+                    buffer = self.__member
+
+                try:
+                    self.__tgz = tarfile.open(fileobj=buffer, mode='r:*')
+                except (tarfile.ReadError, tarfile.CompressionError) as e:
+                    raise DebError("tarfile has returned an error: '%s'" % e)
             else:
                 raise DebError("part '%s' has unexpected extension" % name)
         return self.__tgz
