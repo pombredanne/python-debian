@@ -445,6 +445,30 @@ class TestDeb822(unittest.TestCase):
                 self.assertWellParsed(d, PARSED_PACKAGE)
             self.assertEqual(count, 2)
 
+    def test_iter_paragraphs_with_extra_whitespace(self):
+        """ Paragraphs not elided when stray whitespace is between
+
+        From policy §5.1:
+
+            The paragraphs are separated by empty lines. Parsers may accept
+            lines consisting solely of spaces and tabs as paragraph separators,
+            but control files should use empty lines.
+
+        On the principle of "be strict in what you send; be generous in
+        what you receive", deb822 should permit such extra whitespace between
+        deb822 stanzas.
+
+        See #715558 for further details.
+        """
+        for extra_space in (" ", "  ", "\t"):
+            text = (UNPARSED_PACKAGE + '%s\n' % extra_space
+                        + UNPARSED_PACKAGE).splitlines()
+            count = 0
+            for d in deb822.Deb822.iter_paragraphs(text):
+                count += 1
+            self.assertEqual(count, 2,
+                        "Wrong number paragraphs were found: %d != 2" % count)
+
     def _test_iter_paragraphs(self, filename, cls, **kwargs):
         """Ensure iter_paragraphs consistency"""
         
