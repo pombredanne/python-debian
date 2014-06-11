@@ -1,4 +1,4 @@
-python-debian (0.1.22) UNRELEASED; urgency=low
+python-debian (0.1.22) unstable; urgency=low
 
   [ John Wright ]
   * Acknowledge NMUs.  (Thanks for your work, Colin and Fathi!)
@@ -21,7 +21,7 @@ python-debian (0.1.22) UNRELEASED; urgency=low
     don't link in OpenSSL, which has an incompatible license.
     (Closes: 747031)
 
- -- John Wright <jsw@debian.org>  Mon, 08 Oct 2012 00:41:32 -0700
+ -- John Wright <jsw@debian.org>  Wed, 11 Jun 2014 02:25:21 -0700
 
 python-debian (0.1.21+nmu3) unstable; urgency=medium
 
