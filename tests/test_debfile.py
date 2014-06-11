@@ -135,6 +135,7 @@ class TestDebFile(unittest.TestCase):
         os.unlink(self.debname)
         os.unlink(self.broken_debname)
         os.unlink(self.bz2_debname)
+        os.unlink(self.xz_debname)
 
     def test_missing_members(self):
         self.assertRaises(debfile.DebError,
