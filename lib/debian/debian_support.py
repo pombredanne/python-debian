@@ -22,7 +22,6 @@ from __future__ import absolute_import, print_function
 
 import os
 import re
-import hashlib
 import types
 
 from debian.deprecation import function_deprecated_by
@@ -33,6 +32,25 @@ try:
     _have_apt_pkg = True
 except ImportError:
     _have_apt_pkg = False
+
+# Use the built-in _sha extension instead of hashlib to avoid a dependency on
+# OpenSSL, which is incompatible with the GPL.
+try:
+    # Python 2.x
+    import _sha
+    new_sha1 = _sha.new
+except ImportError:
+    # Python 3.x
+    try:
+        import _sha1
+        new_sha1 = _sha1.sha1
+    except ImportError:
+        def new_sha1():
+            raise NotImplementedError(
+                    "Built-in sha1 implementation not found; cannot use hashlib"
+                    " implementation because it depends on OpenSSL, which"
+                    " may not be linked with this library due to license"
+                    " incompatibilities")
 
 class ParseError(Exception):
     """An exception which is used to signal a parse failure.
@@ -413,7 +431,7 @@ del listReleases
 del list_releases
 
 def read_lines_sha1(lines):
-    m = hashlib.sha1()
+    m = new_sha1()
     for l in lines:
         if isinstance(l, bytes):
             m.update(l)

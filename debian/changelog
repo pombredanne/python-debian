@@ -15,6 +15,12 @@ python-debian (0.1.22) UNRELEASED; urgency=low
   * Use nose to run test suite.
   * Add autopkgtest test suite.
 
+  [ John Wright ]
+  * python_support: Avoid hashlib dependency, using the built-in _sha or
+    _sha1 module (depending on Python version) instead.  That way we
+    don't link in OpenSSL, which has an incompatible license.
+    (Closes: 747031)
+
  -- John Wright <jsw@debian.org>  Mon, 08 Oct 2012 00:41:32 -0700
 
 python-debian (0.1.21+nmu3) unstable; urgency=medium
