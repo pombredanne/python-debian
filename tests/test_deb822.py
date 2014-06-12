@@ -974,6 +974,15 @@ class TestPkgRelations(unittest.TestCase):
         self.assertEqual(rel2, pkg2.relations)
         f.close()
 
+    def test_release(self):
+        with open('test_Release') as f:
+            release = deb822.Release(f)
+        self.assertEqual(release['Codename'], 'sid')
+        self.assertEqual(len(release['SHA1']), 61)
+        self.assertEqual(len(release['SHA256']), 61)
+        self.assertEqual(len(release['SHA512']), 61)
+        self.assertEqual(release['SHA512'][0]['size'], '113433')
+
 
 class TestGpgInfo(unittest.TestCase):
 

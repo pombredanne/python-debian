@@ -1174,6 +1174,7 @@ class Dsc(_gpg_multivalued):
         "files": [ "md5sum", "size", "name" ],
         "checksums-sha1": ["sha1", "size", "name"],
         "checksums-sha256": ["sha256", "size", "name"],
+        "checksums-sha512": ["sha512", "size", "name"],
     }
 
 
@@ -1182,6 +1183,7 @@ class Changes(_gpg_multivalued):
         "files": [ "md5sum", "size", "section", "priority", "name" ],
         "checksums-sha1": ["sha1", "size", "name"],
         "checksums-sha256": ["sha256", "size", "name"],
+        "checksums-sha512": ["sha512", "size", "name"],
     }
 
     def get_pool_path(self):
@@ -1246,6 +1248,7 @@ class Release(_multivalued):
         "md5sum": [ "md5sum", "size", "name" ],
         "sha1": [ "sha1", "size", "name" ],
         "sha256": [ "sha256", "size", "name" ],
+        "sha512": [ "sha512", "size", "name" ],
     }
 
     __size_field_behavior = "apt-ftparchive"
