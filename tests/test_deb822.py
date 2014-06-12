@@ -862,6 +862,14 @@ Description: python modules to work with Debian-related data formats
 
 
 class TestPkgRelations(unittest.TestCase):
+    if sys.version < '3.2':
+        def assertWarns(self, warning, callable, *args, **kwds):
+            with warnings.catch_warnings(record=True) as warning_list:
+                warnings.simplefilter('always')
+
+                result = callable(*args, **kwds)
+
+                self.assertTrue(any(item.category == warning for item in warning_list))
 
     def test_packages(self):
         f = open('test_Packages')
@@ -939,6 +947,8 @@ class TestPkgRelations(unittest.TestCase):
             self.assertEqual(src_rel,
                     deb822.PkgRelation.str(deb822.PkgRelation.parse_relations( \
                             src_rel)))
+        self.assertWarns(UserWarning, deb822.PkgRelation.parse_relations,
+                    "foo bar")
 
     def test_sources(self):
         f = open_utf8('test_Sources')

@@ -910,9 +910,8 @@ class PkgRelation(object):
                     d['arch'] = parse_archs(parts['archs'])
                 return d
             else:
-                print('deb822.py: WARNING: cannot parse package' \
-                      ' relationship "%s", returning it raw' % raw,
-                      file=sys.stderr)
+                warnings.warn('cannot parse package' \
+                      ' relationship "%s", returning it raw' % raw)
                 return { 'name': raw, 'version': None, 'arch': None }
 
         tl_deps = cls.__comma_sep_RE.split(raw.strip()) # top-level deps
