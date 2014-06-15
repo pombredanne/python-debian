@@ -23,12 +23,15 @@ override_dh_auto_build: setup.py
 	lib/debian/doc-debtags > README.debtags
 
 override_dh_auto_test:
+        # don't run the tests if suppressed with DEB_BUILD_OPTIONS=nocheck
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	# run all the tests with both a UTF-8 aware locale and a non-UTF-8
 	# aware locale to catch errors related to encoding.
 	LC_ALL=C nosetests --verbose --exe --where tests
 	LC_ALL=C.UTF-8 nosetests --verbose --exe --where tests
 	LC_ALL=C nosetests3 --verbose --exe --where tests
 	LC_ALL=C.UTF-8 nosetests3 --verbose --exe --where tests
+endif
 
 override_dh_auto_install:
 	dh_auto_install
