@@ -5,6 +5,12 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
   * Expose the list of bugs closed by a changelog entry; thanks to Jelmer Vernooi
     and Stefano Rivera for patches (Closes: #634848).
   * Add support for .deb with uncompressed data.tar member (Closes: #718355).
+  * Prefer the internal parser rather than apt's TagFile for processing deb822
+    files unless explicitly called to process Packages or Sources files:
+    - prevents paragraph parsing truncating on comments (Closes: #743174).
+    - fix parsing of paragraphs when separated by more whitespace than just a
+      newline (Closes: #655988). (Finally fixing interactions with devscripts'
+      wrap-and-sort!)
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 
