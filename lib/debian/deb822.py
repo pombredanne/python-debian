@@ -340,6 +340,7 @@ class Deb822(Deb822Dict):
 
         self.gpg_info = None
 
+    @classmethod
     def iter_paragraphs(cls, sequence, fields=None, use_apt_pkg=False,
                         shared_storage=False, encoding="utf-8"):
         """Generator that yields a Deb822 object for each paragraph in sequence.
@@ -384,12 +385,11 @@ class Deb822(Deb822Dict):
             if isinstance(sequence, six.string_types):
                 sequence = sequence.splitlines()
             iterable = iter(sequence)
-            x = cls(iterable, fields, encoding=encoding)
-            while len(x) != 0:
-                yield x
+            while True:
                 x = cls(iterable, fields, encoding=encoding)
-
-    iter_paragraphs = classmethod(iter_paragraphs)
+                if not x:
+                    break
+                yield x
 
     ###
 
