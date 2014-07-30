@@ -244,6 +244,9 @@ Section: bar
 # An inline comment in the middle of a paragraph should be ignored.
 Priority: optional
 Homepage: http://www.debian.org/
+Build-Depends: debhelper,
+# quux, (temporarily disabled by a comment character)
+ python
 
 # Comments in the middle shouldn't result in extra blank paragraphs either.
 
@@ -266,6 +269,7 @@ PARSED_PARAGRAPHS_WITH_COMMENTS = [
         ('Section', 'bar'),
         ('Priority', 'optional'),
         ('Homepage', 'http://www.debian.org/'),
+        ('Build-Depends', 'debhelper,\n python'),
     ]),
     deb822.Deb822Dict([
         ('Package', 'foo'),
@@ -431,7 +435,10 @@ class TestDeb822(unittest.TestCase):
     def test_iter_paragraphs_file(self):
         text = StringIO(UNPARSED_PACKAGE + '\n\n\n' + UNPARSED_PACKAGE)
 
-        for d in deb822.Deb822.iter_paragraphs(text):
+        for d in deb822.Deb822.iter_paragraphs(text, use_apt_pkg=False):
+            self.assertWellParsed(d, PARSED_PACKAGE)
+
+        for d in deb822.Deb822.iter_paragraphs(text, use_apt_pkg=True):
             self.assertWellParsed(d, PARSED_PACKAGE)
 
     def test_iter_paragraphs_with_gpg(self):
@@ -439,11 +446,9 @@ class TestDeb822(unittest.TestCase):
             string = string % UNPARSED_PACKAGE
             text = (string + '\n\n\n' + string).splitlines()
 
-            count = 0
-            for d in deb822.Deb822.iter_paragraphs(text):
-                count += 1
-                self.assertWellParsed(d, PARSED_PACKAGE)
-            self.assertEqual(count, 2)
+            count = len([self.assertWellParsed(d, PARSED_PACKAGE) \
+                            for d in deb822.Deb822.iter_paragraphs(text)])
+            self.assertEqual(2, count)
 
     def test_iter_paragraphs_with_extra_whitespace(self):
         """ Paragraphs not elided when stray whitespace is between
@@ -461,13 +466,30 @@ class TestDeb822(unittest.TestCase):
         See #715558 for further details.
         """
         for extra_space in (" ", "  ", "\t"):
-            text = (UNPARSED_PACKAGE + '%s\n' % extra_space
-                        + UNPARSED_PACKAGE).splitlines()
-            count = 0
-            for d in deb822.Deb822.iter_paragraphs(text):
-                count += 1
-            self.assertEqual(count, 2,
-                        "Wrong number paragraphs were found: %d != 2" % count)
+            text = six.u(UNPARSED_PACKAGE) + '%s\n' % extra_space + \
+                        six.u(UNPARSED_PACKAGE)
+            count = len(list(deb822.Deb822.iter_paragraphs(text)))
+            self.assertEqual(2, count,
+                        "Wrong number paragraphs were found in list: 2 != %d" % count)
+
+            fd, filename = tempfile.mkstemp()
+            fp = os.fdopen(fd, 'wb')
+            fp.write(text.encode('utf-8'))
+            fp.close()
+
+            try:
+                with open_utf8(filename) as fh:
+                    count = len(list(deb822.Deb822.iter_paragraphs(fh)))
+                    self.assertEqual(2, count,
+                            "Wrong number paragraphs were found in file: 2 != %d" % count)
+                with open_utf8(filename) as fh:
+                    count = len(list(deb822.Packages.iter_paragraphs(fh)))
+                    # this time the apt_pkg parser should be used and this
+                    # *should* elide the paragraphs and make a mess
+                    self.assertEqual(count, 1,
+                            "Wrong number paragraphs were found in file: 1 != %d" % count)
+            finally:
+                os.remove(filename)
 
     def _test_iter_paragraphs(self, filename, cls, **kwargs):
         """Ensure iter_paragraphs consistency"""
@@ -856,18 +878,30 @@ Description: python modules to work with Debian-related data formats
                                   PARSED_PARAGRAPHS_WITH_COMMENTS[i])
 
     def test_iter_paragraphs_comments_use_apt_pkg(self):
-        paragraphs = list(deb822.Deb822.iter_paragraphs(
-            UNPARSED_PARAGRAPHS_WITH_COMMENTS.splitlines(), use_apt_pkg=True))
-        self._test_iter_paragraphs_comments(paragraphs)
+        """ apt_pkg does not support comments within multiline fields
+
+        This test actually checks that that the file is *incorrectly* parsed
+        to ensure that this behaviour doesn't unknowingly and accidentally
+        change in the future.
+
+        See also https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750247#35
+        """
+        fd, filename = tempfile.mkstemp()
+        fp = os.fdopen(fd, 'wb')
+        fp.write(UNPARSED_PARAGRAPHS_WITH_COMMENTS.encode('utf-8'))
+        fp.close()
+
+        try:
+            with open_utf8(filename) as fh:
+                paragraphs = list(deb822.Deb822.iter_paragraphs(
+                    fh, use_apt_pkg=True))
+                self.assertEqual(paragraphs[0]['Build-Depends'], 'debhelper,')
+        finally:
+            os.remove(filename)
 
     def test_iter_paragraphs_comments_native(self):
         paragraphs = list(deb822.Deb822.iter_paragraphs(
             UNPARSED_PARAGRAPHS_WITH_COMMENTS.splitlines(), use_apt_pkg=False))
-        self._test_iter_paragraphs_comments(paragraphs)
-
-    def test_iter_paragraphs_string_comments_use_apt_pkg(self):
-        paragraphs = list(deb822.Deb822.iter_paragraphs(
-            UNPARSED_PARAGRAPHS_WITH_COMMENTS, use_apt_pkg=True))
         self._test_iter_paragraphs_comments(paragraphs)
 
     def test_iter_paragraphs_string_comments_native(self):

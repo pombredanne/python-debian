@@ -1,11 +1,13 @@
 Tests: python3-debian
 Depends: python3-nose,
+ python3-apt,
  python3-debian,
  debian-keyring,
  debian-archive-keyring
 
 Tests: python-debian
 Depends: python2.7,
+ python-apt,
  python-nose,
  python-debian,
  debian-keyring,

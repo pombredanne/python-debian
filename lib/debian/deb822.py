@@ -340,7 +340,7 @@ class Deb822(Deb822Dict):
 
         self.gpg_info = None
 
-    def iter_paragraphs(cls, sequence, fields=None, use_apt_pkg=True,
+    def iter_paragraphs(cls, sequence, fields=None, use_apt_pkg=False,
                         shared_storage=False, encoding="utf-8"):
         """Generator that yields a Deb822 object for each paragraph in sequence.
 
@@ -348,9 +348,14 @@ class Deb822(Deb822Dict):
 
         :param fields: likewise.
 
-        :param use_apt_pkg: if sequence is a file, apt_pkg will be used
+        :param use_apt_pkg: if sequence is a file, apt_pkg can be used
             if available to parse the file, since it's much much faster.  Set
-            this parameter to False to disable using apt_pkg.
+            this parameter to True to enable use of apt_pkg. Note that the
+            TagFile parser from apt_pkg is a much stricter parser of the
+            Deb822 format, particularly with regards whitespace between
+            paragraphs and comments within paragraphs. If these features are
+            required (for example in debian/control files), ensure that this
+            parameter is set to False.
         :param shared_storage: not used, here for historical reasons.  Deb822
             objects never use shared storage anymore.
         :param encoding: Interpret the paragraphs in this encoding.
@@ -1288,6 +1293,19 @@ class Sources(Dsc, _PkgRelationMixin):
         Dsc.__init__(self, *args, **kwargs)
         _PkgRelationMixin.__init__(self, *args, **kwargs)
 
+    @classmethod
+    def iter_paragraphs(cls, sequence, fields=None, use_apt_pkg=True,
+                        shared_storage=False, encoding="utf-8"):
+        """Generator that yields a Deb822 object for each paragraph in Sources.
+
+        Note that this overloaded form of the generator uses apt_pkg (a strict
+        but fast parser) by default.
+
+        See the Deb822.iter_paragraphs function for details.
+        """
+        return super(Sources, cls).iter_paragraphs(sequence, fields,
+                                    use_apt_pkg, shared_storage, encoding)
+
 
 class Packages(Deb822, _PkgRelationMixin):
     """Represent an APT binary package list"""
@@ -1299,6 +1317,19 @@ class Packages(Deb822, _PkgRelationMixin):
     def __init__(self, *args, **kwargs):
         Deb822.__init__(self, *args, **kwargs)
         _PkgRelationMixin.__init__(self, *args, **kwargs)
+
+    @classmethod
+    def iter_paragraphs(cls, sequence, fields=None, use_apt_pkg=True,
+                        shared_storage=False, encoding="utf-8"):
+        """Generator that yields a Deb822 object for each paragraph in Packages.
+
+        Note that this overloaded form of the generator uses apt_pkg (a strict
+        but fast parser) by default.
+
+        See the Deb822.iter_paragraphs function for details.
+        """
+        return super(Packages, cls).iter_paragraphs(sequence, fields,
+                                    use_apt_pkg, shared_storage, encoding)
 
 
 class _CaseInsensitiveString(str):
