@@ -929,6 +929,14 @@ class TestPkgRelations(unittest.TestCase):
 
                 self.assertTrue(any(item.category == warning for item in warning_list))
 
+    def assertPkgDictEqual(self, expected, actual):
+        p1keys = sorted(expected.keys())
+        p2keys = sorted(actual.keys())
+        self.assertEqual(p1keys, p2keys, "Different fields present in packages")
+        for k in p1keys:
+            self.assertEqual(expected[k], actual[k],
+                            "Different for field '%s'" % k)
+
     @staticmethod
     def rel(dict_):
         """Modify dict_ to ensure it contains all fields from parse_relations
@@ -982,7 +990,7 @@ class TestPkgRelations(unittest.TestCase):
                         [rel({'name': 'texlive-base-bin'})],
                     ]
                 }
-        self.assertEqual(rel1, pkg1.relations)
+        self.assertPkgDictEqual(rel1, pkg1.relations)
         pkg2 = next(pkgs)
         rel2 = {'breaks': [],
                 'conflicts': [],
@@ -1002,7 +1010,7 @@ class TestPkgRelations(unittest.TestCase):
                 'replaces': [],
                 'suggests': []
                 }
-        self.assertEqual(rel2, pkg2.relations)
+        self.assertPkgDictEqual(rel2, pkg2.relations)
         pkg3 = next(pkgs)
         dep3 = [
                 [rel({'name': 'dcoprss', 'version': ('>=', '4:3.5.9-2')})],
@@ -1060,7 +1068,7 @@ class TestPkgRelations(unittest.TestCase):
                         [rel({'name': 'apache2-mpm-itk'})]
                     ]
                 }
-        self.assertEqual(rel1, pkg1.relations)
+        self.assertPkgDictEqual(rel1, pkg1.relations)
         pkg2 = next(pkgs)
         rel2 = {'build-conflicts': [],
                 'build-conflicts-indep': [],
@@ -1090,7 +1098,7 @@ class TestPkgRelations(unittest.TestCase):
                         [rel({'name': 'binutils-source'})],
                     ]
                 }
-        self.assertEqual(rel2, pkg2.relations)
+        self.assertPkgDictEqual(rel2, pkg2.relations)
         f.close()
 
 
