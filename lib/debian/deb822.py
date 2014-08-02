@@ -897,7 +897,7 @@ class PkgRelation(object):
         Depends, Recommends, Build-Depends ...)
         """
         def parse_archs(raw):
-            # assumption: no space beween '!' and architecture name
+            # assumption: no space between '!' and architecture name
             archs = []
             for arch in cls.__blank_sep_RE.split(raw.strip()):
                 if len(arch) and arch[0] == '!':
@@ -910,14 +910,14 @@ class PkgRelation(object):
             match = cls.__dep_RE.match(raw)
             if match:
                 parts = match.groupdict()
-                d = { 'name': parts['name'] }
-                if not (parts['relop'] is None or parts['version'] is None):
+                d = {
+                        'name': parts['name'],
+                        'version': None,
+                        'arch': None,
+                    }
+                if parts['relop'] or parts['version']:
                     d['version'] = (parts['relop'], parts['version'])
-                else:
-                    d['version'] = None
-                if parts['archs'] is None:
-                    d['arch'] = None
-                else:
+                if parts['archs']:
                     d['arch'] = parse_archs(parts['archs'])
                 return d
             else:
