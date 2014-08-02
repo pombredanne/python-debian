@@ -11,6 +11,9 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
     - fix parsing of paragraphs when separated by more whitespace than just a
       newline (Closes: #655988). (Finally fixing interactions with devscripts'
       wrap-and-sort!)
+  * Parse foreign architecture (package:any) relationships and also other
+    multi-arch related relationships (Closes: #670679)
+  * Parse build-profiles syntax.
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 
