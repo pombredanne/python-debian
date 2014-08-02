@@ -883,6 +883,7 @@ class PkgRelation(object):
     # dependency, checking their correctness wrt policy is out of scope
     __dep_RE = re.compile(
             r'^\s*(?P<name>[a-zA-Z0-9.+\-]{2,})'
+            r'(:(?P<archqual>([a-zA-Z0-9][a-zA-Z0-9-]*)))?'
             r'(\s*\(\s*(?P<relop>[>=<]+)\s*'
             r'(?P<version>[0-9a-zA-Z:\-+~.]+)\s*\))?'
             r'(\s*\[(?P<archs>[\s!\w\-]+)\])?\s*'
@@ -912,6 +913,7 @@ class PkgRelation(object):
                 parts = match.groupdict()
                 d = {
                         'name': parts['name'],
+                        'archqual': parts['archqual'],
                         'version': None,
                         'arch': None,
                     }

@@ -950,6 +950,8 @@ class TestPkgRelations(unittest.TestCase):
             dict_['version'] = None
         if 'arch' not in dict_:
             dict_['arch'] = None
+        if 'archqual' not in dict_:
+            dict_['archqual'] = None
         return dict_
 
     def test_packages(self):
@@ -962,7 +964,7 @@ class TestPkgRelations(unittest.TestCase):
         rel1 = {'breaks': [],
                 'conflicts': [],
                 'depends': [
-                        [rel({'name': 'file'})],
+                        [rel({'name': 'file', 'archqual': 'i386'})],
                         [rel({'name': 'libc6', 'version': ('>=', '2.7-1')})],
                         [rel({'name': 'libpaper1'})],
                         [rel({'name': 'psutils'})],
@@ -1076,15 +1078,15 @@ class TestPkgRelations(unittest.TestCase):
                         [rel({'name': 'dpkg-dev', 'version': ('>=', '1.13.9')})],
                         [rel({'name': 'autoconf', 'version': ('>=', '2.13')})],
                         [rel({'name': 'bash'})],
-                        [rel({'name': 'bison'})],
+                        [rel({'name': 'bison', 'archqual': 'amd64'})],
                         [rel({'name': 'flex'})],
-                        [rel({'name': 'gettext'})],
+                        [rel({'name': 'gettext', 'archqual': 'any'})],
                         [rel({'name': 'texinfo'})],
                         [rel({'arch': [(True, 'hppa')], 'name': 'expect-tcl8.3', 'version': ('>=', '5.32.2')})],
                         [rel({'name': 'dejagnu', 'version': ('>=', '1.4.2-1.1'), 'arch': None})],
                         [rel({'name': 'dpatch'})],
                         [rel({'name': 'file'})],
-                        [rel({'name': 'bzip2'})],
+                        [rel({'name': 'bzip2', 'archqual': 'native'})],
                         [rel({'name': 'lsb-release'})],
                     ],
                 'build-depends-indep': [],

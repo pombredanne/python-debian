@@ -5,7 +5,7 @@ Installed-Size: 4244
 Maintainer: Masayuki Hatta (mhatta) <mhatta@debian.org>
 Architecture: i386
 Version: 1:4.14-1
-Depends: file, libc6 (>= 2.7-1), libpaper1, psutils
+Depends: file:i386, libc6 (>= 2.7-1), libpaper1, psutils
 Recommends: bzip2, lpr | rlpr | cupsys-client, wdiff
 Suggests: emacsen-common, ghostscript, graphicsmagick-imagemagick-compat | imagemagick, groff, gv, html2ps, t1-cyrillic, texlive-base-bin
 Filename: pool/main/a/a2ps/a2ps_4.14-1_i386.deb

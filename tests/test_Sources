@@ -26,7 +26,7 @@ Version: 2.18.1~cvs20080103-6
 Priority: optional
 Section: devel
 Maintainer: James Troup <james@nocrew.org>
-Build-Depends: dpkg-dev (>= 1.13.9), autoconf (>= 2.13), bash, bison, flex, gettext, texinfo, expect-tcl8.3 (>= 5.32.2) [hppa], dejagnu (>= 1.4.2-1.1), dpatch, file, bzip2, lsb-release
+Build-Depends: dpkg-dev (>= 1.13.9), autoconf (>= 2.13), bash, bison:amd64, flex, gettext:any, texinfo, expect-tcl8.3 (>= 5.32.2) [hppa], dejagnu (>= 1.4.2-1.1), dpatch, file, bzip2:native, lsb-release
 Architecture: any
 Standards-Version: 3.7.3
 Format: 1.0
@@ -68,7 +68,7 @@ Version: 0.1.14
 Priority: optional
 Section: devel
 Maintainer: Debian python-debian Maintainers <pkg-python-debian-maint@lists.alioth.debian.org>
-Build-Depends: debhelper (>= 5.0.37.2), python, python-setuptools
+Build-Depends: debhelper (>= 5.0.37.2), python:any, python-setuptools
 Build-Depends-Indep: python-support (>= 0.3)
 Architecture: all
 Standards-Version: 3.8.1
