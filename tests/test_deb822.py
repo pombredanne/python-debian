@@ -952,6 +952,8 @@ class TestPkgRelations(unittest.TestCase):
             dict_['arch'] = None
         if 'archqual' not in dict_:
             dict_['archqual'] = None
+        if 'restrictions' not in dict_:
+            dict_['restrictions'] = None
         return dict_
 
     def test_packages(self):
@@ -1081,8 +1083,11 @@ class TestPkgRelations(unittest.TestCase):
                         [rel({'name': 'bison', 'archqual': 'amd64'})],
                         [rel({'name': 'flex'})],
                         [rel({'name': 'gettext', 'archqual': 'any'})],
-                        [rel({'name': 'texinfo'})],
-                        [rel({'arch': [(True, 'hppa')], 'name': 'expect-tcl8.3', 'version': ('>=', '5.32.2')})],
+                        [rel({'name': 'texinfo',
+                            'restrictions': [(False, ('profile', 'stage1')), (False, ('profile', 'cross'))]})],
+                        [rel({'arch': [(True, 'hppa')], 'name': 'expect-tcl8.3',
+                            'version': ('>=', '5.32.2'),
+                            'restrictions': [(False, ('profile', 'stage1'))]})],
                         [rel({'name': 'dejagnu', 'version': ('>=', '1.4.2-1.1'), 'arch': None})],
                         [rel({'name': 'dpatch'})],
                         [rel({'name': 'file'})],

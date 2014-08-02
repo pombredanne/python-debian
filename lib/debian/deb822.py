@@ -887,10 +887,15 @@ class PkgRelation(object):
             r'(\s*\(\s*(?P<relop>[>=<]+)\s*'
             r'(?P<version>[0-9a-zA-Z:\-+~.]+)\s*\))?'
             r'(\s*\[(?P<archs>[\s!\w\-]+)\])?\s*'
+            r'(<(?P<restrictions>.+)>)?\s*'
             r'$')
     __comma_sep_RE = re.compile(r'\s*,\s*')
     __pipe_sep_RE = re.compile(r'\s*\|\s*')
     __blank_sep_RE = re.compile(r'\s*')
+    __restriction_RE = re.compile(
+            r'(?P<enabled>\!)?'
+            r'(?P<namespace>[^.]+)\.'
+            r'(?P<name>[^\s]+)')
 
     @classmethod
     def parse_relations(cls, raw):
@@ -907,6 +912,30 @@ class PkgRelation(object):
                     archs.append((True, arch))
             return archs
 
+        def parse_profiles(raw):
+            """ split a string of restrictions into a list of restrictions
+
+            Each restriction is a tuple of form:
+
+                (active, (namespace, name))
+
+            where
+                active: boolean: whether the restriction is positive or negative
+                namespace: the namespace of the restriction e.g. 'profile'
+                name: the name of the restriction e.g. 'stage1'
+            """
+            restrictions = []
+            for restriction in cls.__blank_sep_RE.split(raw.lower().strip()):
+                match = cls.__restriction_RE.match(restriction)
+                if match:
+                    parts = match.groupdict()
+                    restrictions.append((
+                                    parts['enabled'] != '!',
+                                    (parts['namespace'], parts['name']),
+                                ))
+            return restrictions
+
+
         def parse_rel(raw):
             match = cls.__dep_RE.match(raw)
             if match:
@@ -916,11 +945,14 @@ class PkgRelation(object):
                         'archqual': parts['archqual'],
                         'version': None,
                         'arch': None,
+                        'restrictions': None,
                     }
                 if parts['relop'] or parts['version']:
                     d['version'] = (parts['relop'], parts['version'])
                 if parts['archs']:
                     d['arch'] = parse_archs(parts['archs'])
+                if parts['restrictions']:
+                    d['restrictions'] = parse_profiles(parts['restrictions'])
                 return d
             else:
                 warnings.warn('cannot parse package' \
