@@ -2,6 +2,8 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
 
   * Add sha512 sums to Release and Sources (Closes: #732599).
   * Use warnings rather than stderr in PkgRelation (Closes: #712513).
+  * Expose the list of bugs closed by a changelog entry; thanks to Jelmer Vernooi
+    and Stefano Rivera for patches (Closes: #634848).
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 

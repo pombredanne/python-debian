@@ -1,7 +1,9 @@
 gnutls13 (1:1.4.1-1) unstable; urgency=HIGH
 
   [ James Westby ]
-  * New upstream release.
+  * New upstream release. Closes: #123, #456,
+    #789. LP: #1234, #2345,
+    #3456
   * Remove the following patches as they are now included upstream:
     - 10_certtoolmanpage.diff
     - 15_fixcompilewarning.diff

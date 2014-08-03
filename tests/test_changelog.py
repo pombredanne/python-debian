@@ -68,7 +68,9 @@ class ChangelogTests(unittest.TestCase):
         """gnutls13 (1:1.4.1-1) unstable; urgency=HIGH
 
   [ James Westby ]
-  * New upstream release.
+  * New upstream release. Closes: #123, #456,
+    #789. LP: #1234, #2345,
+    #3456
   * Remove the following patches as they are now included upstream:
     - 10_certtoolmanpage.diff
     - 15_fixcompilewarning.diff
@@ -173,6 +175,19 @@ class ChangelogTests(unittest.TestCase):
         self.assertEqual(c.upstream_version, '1.4.1')
         self.assertEqual(c.epoch, '1')
         self.assertEqual(str(c.version), c.full_version)
+
+    def test_bugs_closed(self):
+        f = open('test_changelog')
+        c = iter(changelog.Changelog(f))
+        f.close()
+        # test bugs in a list
+        block = next(c)
+        self.assertEqual(block.bugs_closed, [123, 456, 789])
+        self.assertEqual(block.lp_bugs_closed, [1234, 2345, 3456])
+        # test bugs in parentheses
+        block = next(c)
+        self.assertEqual(block.bugs_closed, [375815])
+        self.assertEqual(block.lp_bugs_closed, [])
 
     def test_allow_full_stops_in_distribution(self):
         f = open('test_changelog_full_stops')

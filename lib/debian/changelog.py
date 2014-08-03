@@ -140,6 +140,23 @@ class ChangeBlock(object):
                 changes.append(change)
             self._changes = changes
 
+    def _get_bugs_closed_generic(self, type_re):
+        changes = six.u(' ').join(self._changes)
+        bugs = []
+        for match in type_re.finditer(changes):
+            closes_list = match.group(0)
+            for match in re.finditer("\d+", closes_list):
+                bugs.append(int(match.group(0)))
+        return bugs
+
+    @property
+    def bugs_closed(self):
+        return self._get_bugs_closed_generic(closes)
+
+    @property
+    def lp_bugs_closed(self):
+        return self._get_bugs_closed_generic(closeslp)
+
     def _format(self):
         # TODO(jsw): Switch to StringIO or a list to join at the end.
         block = ""
@@ -203,6 +220,9 @@ vim_variables = re.compile('^vim:', re.IGNORECASE)
 cvs_keyword = re.compile('^\$\w+:.*\$')
 comments = re.compile('^\# ')
 more_comments = re.compile('^/\*.*\*/')
+closes = re.compile('closes:\s*(?:bug)?\#?\s?\d+(?:,\s*(?:bug)?\#?\s?\d+)*',
+                    re.IGNORECASE)
+closeslp = re.compile('lp:\s+\#\d+(?:,\s*\#\d+)*', re.IGNORECASE)
 
 old_format_re1 = re.compile('^(\w+\s+\w+\s+\d{1,2} \d{1,2}:\d{1,2}:\d{1,2}'
         '\s+[\w\s]*\d{4})\s+(.*)\s+(<|\()(.*)(\)|>)')
