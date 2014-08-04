@@ -117,10 +117,12 @@ class TestDebFile(unittest.TestCase):
         self.broken_debname = 'test-broken.deb'
         self.bz2_debname = 'test-bz2.deb'
         self.xz_debname = 'test-xz.deb'
+        self.uncompressed_debname = 'test-uncompressed.deb'
         uudecode('test.deb.uu', self.debname)
         uudecode('test-broken.deb.uu', self.broken_debname)
         uudecode('test-bz2.deb.uu', self.bz2_debname)
         uudecode('test-xz.deb.uu', self.xz_debname)
+        uudecode('test-uncompressed.deb.uu', self.uncompressed_debname)
 
         self.debname = 'test.deb'
         uu_deb = open('test.deb.uu', 'rb')
@@ -136,10 +138,19 @@ class TestDebFile(unittest.TestCase):
         os.unlink(self.broken_debname)
         os.unlink(self.bz2_debname)
         os.unlink(self.xz_debname)
+        os.unlink(self.uncompressed_debname)
 
     def test_missing_members(self):
         self.assertRaises(debfile.DebError,
                 lambda _: debfile.DebFile(self.broken_debname), None)
+
+    def test_tar_uncompressed(self):
+        un_deb = debfile.DebFile(self.uncompressed_debname)
+        # random test on the data part (which is uncompressed), just to check
+        # if we can access its content
+        self.assertEqual(os.path.normpath(un_deb.data.tgz().getnames()[10]),
+                         os.path.normpath('./usr/share/locale/bg/'))
+        un_deb.close()
 
     def test_tar_bz2(self):
         bz2_deb = debfile.DebFile(self.bz2_debname)

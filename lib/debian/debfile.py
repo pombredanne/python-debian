@@ -46,10 +46,11 @@ class DebPart(object):
     """'Part' of a .deb binary package.
     
     A .deb package is considered as made of 2 parts: a 'data' part
-    (corresponding to the 'data.tar.gz' archive embedded in a .deb) and a
-    'control' part (the 'control.tar.gz' archive). Each of them is represented
-    by an instance of this class. Each archive should be a compressed tar
-    archive; supported compression formats are: .tar.gz, .tar.bz2 .
+    (corresponding to the possibly compressed 'data.tar' archive embedded
+    in a .deb) and a 'control' part (the 'control.tar.gz' archive). Each of
+    them is represented by an instance of this class. Each archive should
+    be a compressed tar archive although an uncompressed data.tar is permitted;
+    supported compression formats are: .tar.gz, .tar.bz2, .tar.xz .
 
     When referring to file members of the underlying .tar.gz archive, file
     names can be specified in one of 3 formats "file", "./file", "/file". In
@@ -74,7 +75,8 @@ class DebPart(object):
         if self.__tgz is None:
             name = self.__member.name
             extension = os.path.splitext(name)[1][1:]
-            if extension in PART_EXTS:
+            if extension in PART_EXTS or name == DATA_PART:
+                # Permit compressed members and also uncompressed data.tar
                 if sys.version_info < (3, 3) and extension == 'xz':
                     try:
                         import subprocess
@@ -259,8 +261,8 @@ class DebFile(ArFile):
                         contained package version), 2.0 at the time of writing
                         for all .deb packages in the Debian archive
         - data          DebPart object corresponding to the data.tar.gz (or
-                        other compressed tar) archive contained in the .deb
-                        file
+                        other compressed or uncompressed tar) archive contained
+                        in the .deb file
         - control       DebPart object corresponding to the control.tar.gz (or
                         other compressed tar) archive contained in the .deb
                         file
@@ -271,8 +273,9 @@ class DebFile(ArFile):
         actual_names = set(self.getnames())
 
         def compressed_part_name(basename):
-            global PART_EXTS
             candidates = [ '%s.%s' % (basename, ext) for ext in PART_EXTS ]
+            if basename == DATA_PART: # also permit uncompressed data.tar
+                candidates.append(basename)
             parts = actual_names.intersection(set(candidates))
             if not parts:
                 raise DebError("missing required part in given .deb" \
