@@ -4,6 +4,7 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
   * Use warnings rather than stderr in PkgRelation (Closes: #712513).
   * Expose the list of bugs closed by a changelog entry; thanks to Jelmer Vernooi
     and Stefano Rivera for patches (Closes: #634848).
+  * Add support for .deb with uncompressed data.tar member (Closes: #718355).
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 
