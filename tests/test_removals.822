@@ -1,0 +1,132 @@
+Date: Wed, 01 Jan 2014 17:03:54 +0000
+Ftpmaster: Ansgar Burchardt
+Suite: unstable
+Binaries:
+ libzoom-ruby_0.4.1-5 [all]
+Reason: [auto-cruft] no longer built from source
+
+Date: Mon, 07 Jul 2014 11:52:03 +0000
+Ftpmaster: Scott Kitterman
+Suite: experimental
+Binaries:
+ gnustep-back0.22-art_0.22.0-1 [amd64]
+ gnustep-back0.22-cairo_0.22.0-1 [amd64]
+ gnustep-gpbs_0.22.0-1 [amd64]
+Reason: [auto-cruft] NBS (no longer built by gnustep-back)
+
+Date: Mon, 07 Jul 2014 11:55:28 +0000
+Ftpmaster: Scott Kitterman
+Suite: unstable
+Sources:
+ redmine-plugin-markdown_2.0.1+git20130424-1
+Binaries:
+ redmine-plugin-markdown_2.0.1+git20130424-1 [all]
+Reason: ROM; obsolete
+Bug: 753912
+Also-WNPP: 123456
+
+Date: Thu, 31 Jul 2014 12:17:40 +0000
+Ftpmaster: Scott Kitterman
+Suite: unstable
+Sources:
+ yafaray_0.1.5-3
+Binaries:
+ yafaray_0.1.5-3+b2 [amd64, armel, armhf, hurd-i386, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+Reason: ROM; Dead upstream, unmaintained
+Bug: 756408
+Also-WNPP:
+
+Date: Fri, 01 Aug 2014 10:45:41 +0000
+Ftpmaster: Scott Kitterman
+Suite: experimental
+Sources:
+ baloo-widgets_4:4.13.2-1
+ brian_1.4.1-1
+ gwenview_4:4.13.1-1
+ kdepim_4:4.13.1-1
+ kdepim-runtime_4:4.13.1-1
+ nepomuk-core_4:4.13.1-1
+ pykde4_4:4.13.1-1
+Binaries:
+ akonadiconsole_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ akregator_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ blogilo_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ gwenview_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ gwenview-dbg_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kaddressbook_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kaddressbook-mobile_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kalarm_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kdepim_4:4.13.1-1 [all]
+ kdepim-dbg_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kdepim-kresources_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kdepim-mobile_4:4.13.1-1 [all]
+ kdepim-mobileui-data_4:4.13.1-1 [all]
+ kdepim-runtime_4:4.13.1-1 [amd64, armel, armhf, hurd-i386, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kdepim-runtime-dbg_4:4.13.1-1 [amd64, armel, armhf, hurd-i386, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kjots_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kleopatra_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kmail_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kmail-mobile_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ knode_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ knotes_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ konsolekalendar_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ kontact_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ korganizer_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ korganizer-mobile_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ ktimetracker_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libbaloowidgets-dev_4:4.13.2-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libbaloowidgets4_4:4.13.2-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libbaloowidgets4-dbg_4:4.13.2-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libcalendarsupport4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libcomposereditorng4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libeventviews4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libincidenceeditorsng4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libkdepim4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libkdepimdbusinterfaces4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libkdepimmobileui4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libkdgantt2-0_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libkleo4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libkmanagesieve4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libkpgp4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libksieve4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libksieveui4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libmailcommon4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libmailimporter4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libmessagecomposer4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libmessagecore4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libmessagelist4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libmessageviewer4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libnepomukcore4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libnoteshared4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libpimcommon4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libsendlater4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ libtemplateparser4_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ nepomuk-core-data_4:4.13.1-1 [all]
+ nepomuk-core-dbg_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ nepomuk-core-dev_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ nepomuk-core-runtime_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ notes-mobile_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ python-brian_1.4.1-1 [all]
+ python-brian-doc_1.4.1-1 [all]
+ python-brian-lib_1.4.1-1 [amd64, armel, armhf, hurd-i386, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ python-kde4_4:4.13.1-1 [amd64, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mipsel, powerpc, s390x]
+ python-kde4-dbg_4:4.13.1-1 [amd64, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mipsel, powerpc, s390x]
+ python-kde4-dev_4:4.13.1-1 [all]
+ python-kde4-doc_4:4.13.1-1 [all]
+ python3-pykde4_4:4.13.1-1 [amd64, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mipsel, powerpc, s390x]
+ python3-pykde4-dbg_4:4.13.1-1 [amd64, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mipsel, powerpc, s390x]
+ storageservicemanager_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+ tasks-mobile_4:4.13.1-1 [amd64, armel, armhf, i386, kfreebsd-amd64, kfreebsd-i386, mips, mipsel, powerpc, s390x, sparc]
+Reason: [auto-cruft] NVIU
+
+Date: Fri, 01 Aug 2014 10:47:02 +0000
+Ftpmaster: Scott Kitterman
+Suite: unstable
+Sources:
+ mingw32-runtime_3.13-1
+Binaries:
+ mingw32-runtime_3.13-1 [all]
+Reason: ROM; obsolete, superceded by mingw-w64
+Bug: 756732
+Also-Bugs: 429313 498529 521758 607215 607218 609869 648306
+Also-WNPP:

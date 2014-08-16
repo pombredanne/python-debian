@@ -19,6 +19,7 @@
 
 from __future__ import absolute_import
 
+import email.utils
 import io
 import os
 import re
@@ -960,6 +961,30 @@ Description: python modules to work with Debian-related data formats
         with io.open('test_Changes', 'r', encoding='utf-8') as f:
             changes = deb822.Changes(f)
         self.assertEqual('python-debian', changes['Source'])
+
+    def test_removals(self):
+        with open('test_removals.822') as f:
+            removals = deb822.Removals.iter_paragraphs(f)
+            r = next(removals)
+            self.assertEqual(r['suite'], 'unstable')
+            self.assertEqual(r['date'], u'Wed, 01 Jan 2014 17:03:54 +0000')
+            self.assertEqual(r.date.strftime('%s'), '1388595834')
+            self.assertEqual(len(r.binaries), 1)
+            self.assertEqual(r.binaries[0]['package'], 'libzoom-ruby')
+            self.assertEqual(r.binaries[0]['version'], '0.4.1-5')
+            self.assertEqual(r.binaries[0]['architectures'], set(['all']))
+            r = next(removals)
+            self.assertEqual(len(r.binaries), 3)
+            r = next(removals)
+            self.assertEqual(r['bug'], '753912')
+            self.assertEqual(r.bug, [753912])
+            self.assertEqual(r.also_wnpp, [123456])
+            r = next(removals)
+            self.assertEqual(r.binaries[0]['architectures'],
+                             set(['amd64', 'armel', 'armhf', 'hurd-i386',
+                                  'i386', 'kfreebsd-amd64', 'kfreebsd-i386',
+                                  'mips', 'mipsel', 'powerpc', 's390x',
+                                  'sparc']))
 
 
 class TestPkgRelations(unittest.TestCase):
