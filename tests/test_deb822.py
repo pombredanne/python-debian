@@ -920,14 +920,17 @@ Description: python modules to work with Debian-related data formats
 
 
 class TestPkgRelations(unittest.TestCase):
-    if sys.version < '3.2':
-        def assertWarns(self, warning, callable, *args, **kwds):
-            with warnings.catch_warnings(record=True) as warning_list:
-                warnings.simplefilter('always')
+    # TODO(jsw): Stop overriding this for Python versions that actually include
+    # assertWarns.  Unfortunately, that's not possible right now because for
+    # some reason sys.modules changes size during case.py's iteration of it in
+    # _AssertWarnsContext.__enter__ (python3.4).
+    def assertWarns(self, warning, callable, *args, **kwds):
+        with warnings.catch_warnings(record=True) as warning_list:
+            warnings.simplefilter('always')
 
-                result = callable(*args, **kwds)
+            result = callable(*args, **kwds)
 
-                self.assertTrue(any(item.category == warning for item in warning_list))
+            self.assertTrue(any(item.category == warning for item in warning_list))
 
     def assertPkgDictEqual(self, expected, actual):
         p1keys = sorted(expected.keys())
