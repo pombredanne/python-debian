@@ -1,0 +1,78 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+ 
+Format: 1.0
+Source: at
+Binary: at
+Architecture: any
+Version: 3.1.15-1
+Maintainer: Ansgar Burchardt <ansgar@debian.org>
+Standards-Version: 3.9.5
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/at.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/at.git
+Build-Depends: debhelper (>= 9), autotools-dev, bison, flex, libpam0g-dev, perl (>= 5.10.1), dh-systemd
+Package-List:
+ at deb admin standard arch=any
+Checksums-Sha1:
+ 658840da37ee83fc81139b007cb4895abacb8b93 122968 at_3.1.15.orig.tar.gz
+ bd780f3e71a0751b65dfe3b10f9045cabba0f1e8 10154 at_3.1.15-1.diff.gz
+Checksums-Sha256:
+ 03a84f5293d5a95ef4231b7faf5578f141f0c76a2b304dd655bc7e90e97bf7fc 122968 at_3.1.15.orig.tar.gz
+ adf292bc0e733cc636822209cc1f7fa7102c5fc605f25f11dbda20e0d917cd90 10154 at_3.1.15-1.diff.gz
+Files:
+ f0f96db22e3a174b53ce4beeeb848839 122968 at_3.1.15.orig.tar.gz
+ 17846853a08753b886558d34d5dba1ac 10154 at_3.1.15-1.diff.gz
+ 
+-----BEGIN PGP SIGNATURE----- 
+Version: GnuPG v1
+ 
+iQIcBAEBCgAGBQJT52GxAAoJEIATJTTdNH3I/2oP/jf/C1kNi6iYrzUyybq8uXzf
+WemTGCyNUaekM9oaYD+55RrO+GT0/2P0qnnZ+JN9dSl2/qK1EdDWu/umO69d6gVi
+eRN3iP1zoiMuaIHS6JQk8J4sdDDrjrwQUkJ8Kulech80rLJUluccPRPzKZcW9uJX
+MCfsGCgouH5RPybs91AgOQCO++W9ZlILZaZdQlnArJJlE+TGaKbFKg4h7hEWAWzT
+YM34Ibz4O1v/a6qByjVZ8QNWdCFYThMI3QKRCIpw1SIklJOEwaKuwbej101J8yw+
+6Lse0uxkTI3KvpHpcozDpXrNpPMVNlwjOYtrKHTug8GqHNnImlYKJ3jKueICRNfu
+C4nQbCBQgMyEnd9Z9nF7T53aWKDENdjtctLZ9BX+mJgt/9rHQHWQ5q9pxKAb2+xU
+64MXvubFMwE7SlJIei4E1bGw7qgnTnVZKy63J1MgrHvp4nWtTKGxecMk81yye7kv
+k1RTlczN8gOryZ3xNTsL3Nl0XBhsz2CnUkD7LnBqIgdMd2Jf7pJ5Nmo57kibybNR
+Xz+zd3mxLqC+TPGTeqW0UTCR5ERyhxQeFV1NVQ+8EipKt940fsQgaWhrW9qOVWhl
+2rJYNIzPt/fRRfPptZS9zyix7/SFzlLdqbsfAV5wIwJtEjrUDeejOziaQXJVoWeM
+eLphaSC5wKKMMWb4OJf4
+=sf7s
+-----END PGP SIGNATURE----- 
+
+Format: 3.0 (quilt)
+Source: gnupg
+Binary: gnupg, gnupg-curl, gpgv, gnupg-udeb, gpgv-udeb, gpgv-win32
+Architecture: any all
+Version: 1.4.12-6
+Maintainer: Debian GnuPG-Maintainers <pkg-gnupg-maint@lists.alioth.debian.org>
+Uploaders: Sune Vuorela <debian@pusling.com>, Daniel Leidert <dleidert@debian.org>, Thijs Kinkhorst <thijs@debian.org>
+Homepage: http://www.gnupg.org
+Standards-Version: 3.9.3
+Vcs-Browser: http://svn.debian.org/wsvn/pkg-gnupg/gnupg/
+Vcs-Svn: svn://svn.debian.org/svn/pkg-gnupg/gnupg/trunk/
+Build-Depends: debhelper (>> 7), libz-dev, libldap2-dev, libbz2-dev, libusb-dev [!hurd-i386], libreadline-dev, file, gettext, libcurl4-gnutls-dev
+Build-Depends-Indep: mingw-w64
+Package-List:
+ gnupg deb utils important
+ gnupg-curl deb utils optional
+ gnupg-udeb udeb debian-installer extra
+ gpgv deb utils important
+ gpgv-udeb udeb debian-installer extra
+ gpgv-win32 deb utils extra
+Checksums-Sha1:
+ 790587e440ec7d429b120db7a96a237badc638fd 4939171 gnupg_1.4.12.orig.tar.gz
+ ad9793124c400ca7e858291155b42b53ee87d2d4 92008 gnupg_1.4.12-6.debian.tar.gz
+Checksums-Sha256:
+ bb94222fa263e55a5096fdc1c6cd60e9992602ce5067bc453a4ada77bb31e367 4939171 gnupg_1.4.12.orig.tar.gz
+ 2d146235f3ff89f119849d34f455ba659c0e0dd0c08693305bac56a33dfe5978 92008 gnupg_1.4.12-6.debian.tar.gz
+Files:
+ f9a65ccd7166d3fdb084454cf7427564 4939171 gnupg_1.4.12.orig.tar.gz
+ e23c2823d4105bfd4597fa4d1c88a87d 92008 gnupg_1.4.12-6.debian.tar.gz
+
+-----END PGP NOSIGNATURE-----
+Version: vim v7.3.547 (GNU/Linux)
+
+Signed and approved.
+-----END PGP NOSIGNATURE-----

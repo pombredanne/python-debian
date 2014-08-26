@@ -7,6 +7,7 @@
 # Copyright (C) 2006-2010  John Wright <john@johnwright.org>
 # Copyright (C) 2006       Adeodato Simó <dato@net.com.org.es>
 # Copyright (C) 2008       Stefano Zacchiroli <zack@upsilon.cc>
+# Copyright (C) 2014       Google, Inc.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -631,7 +632,7 @@ class Deb822(Deb822Dict):
         lines = []
         gpg_post_lines = []
         state = b'SAFE'
-        gpgre = re.compile(br'^-----(?P<action>BEGIN|END) PGP (?P<what>[^-]+)-----$')
+        gpgre = re.compile(br'^-----(?P<action>BEGIN|END) PGP (?P<what>[^-]+)-----\s*$')
         # Include whitespace-only lines in blank lines to split paragraphs.
         # (see #715558)
         blank_line = re.compile(b'^\s*$')

@@ -1,5 +1,6 @@
 python-debian (0.1.23) UNRELEASED; urgency=medium
 
+  [ Stuart Prescott ]
   * Add sha512 sums to Release and Sources (Closes: #732599).
   * Use warnings rather than stderr in PkgRelation (Closes: #712513).
   * Expose the list of bugs closed by a changelog entry; thanks to Jelmer Vernooi
@@ -14,6 +15,11 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
   * Parse foreign architecture (package:any) relationships and also other
     multi-arch related relationships (Closes: #670679)
   * Parse build-profiles syntax.
+
+  [ John Wright ]
+  * Fix a GPG validation bug.  With some trailing whitespace, the code
+    could be tricked into validating a signature, but using the bogus
+    data after the signed section (Closes: #695932).
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 

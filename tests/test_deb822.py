@@ -426,6 +426,17 @@ class TestDeb822(unittest.TestCase):
             self.assertEqual(result['VALIDSIG'], valid['VALIDSIG'])
             self.assertEqual(result['SIG_ID'][1:], valid['SIG_ID'][1:])
 
+    def test_gpg_info2(self):
+        if not (os.path.exists('/usr/bin/gpgv') and
+                os.path.exists('/usr/share/keyrings/debian-keyring.gpg')):
+            return
+
+        with open('test_Dsc.badsig', mode='rb') as f:
+            dsc = deb822.Dsc(f)
+            i = dsc.get_gpg_info()
+            self.assertTrue(i.valid())
+            self.assertEqual('at', dsc['Source'])
+
     def test_iter_paragraphs_array(self):
         text = (UNPARSED_PACKAGE + '\n\n\n' + UNPARSED_PACKAGE).splitlines()
 
