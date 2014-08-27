@@ -1,13 +1,18 @@
 Tests: python3-debian
-Depends: python3-nose,
- python3-apt,
+Restrictions: allow-stderr needs-recommends
+Depends:
+ binutils,
+ python3-all,
+ python3-nose,
  python3-debian,
  debian-keyring,
  debian-archive-keyring
 
 Tests: python-debian
-Depends: python2.7,
- python-apt,
+Restrictions: allow-stderr needs-recommends
+Depends:
+ binutils,
+ python2.7,
  python-nose,
  python-debian,
  debian-keyring,
