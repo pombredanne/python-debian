@@ -37,7 +37,6 @@ except (ImportError, AttributeError):
 
 import chardet
 import collections
-import os
 import re
 import subprocess
 import sys
@@ -64,6 +63,14 @@ else:
 
 GPGV_DEFAULT_KEYRINGS = frozenset(['/usr/share/keyrings/debian-keyring.gpg'])
 GPGV_EXECUTABLE = '/usr/bin/gpgv'
+
+
+class Error(Exception):
+    """Base class for custom exceptions in this module."""
+
+
+class RestrictedFieldError(Error):
+    """Raised when modifying the raw value of a field is not allowed."""
 
 
 class TagSectionWrapper(collections.Mapping):
@@ -1355,6 +1362,168 @@ class Packages(Deb822, _PkgRelationMixin):
         """
         return super(Packages, cls).iter_paragraphs(sequence, fields,
                                     use_apt_pkg, shared_storage, encoding)
+
+
+class _ClassInitMeta(type):
+    """Metaclass for classes that can be initialized at creation time.
+
+    Implement the method
+
+      @classmethod
+      def _class_init(cls, new_attrs):
+        pass
+
+    on a class, and apply this metaclass to it.  The _class_init method will be
+    called right after the class is created.  The 'new_attrs' param is a dict
+    containing the attributes added in the definition of the class.
+    """
+
+    def __init__(cls, name, bases, attrs):
+        super(_ClassInitMeta, cls).__init__(name, bases, attrs)
+        cls._class_init(attrs)
+
+
+class RestrictedField(collections.namedtuple(
+        'RestrictedField', 'name from_str to_str allow_none')):
+    """Placeholder for a property providing access to a restricted field.
+
+    Use this as an attribute when defining a subclass of RestrictedWrapper.
+    It will be replaced with a property.  See the RestrictedWrapper
+    documentation for an example.
+    """
+
+    def __new__(cls, name, from_str=None, to_str=None, allow_none=True):
+        """Create a new RestrictedField placeholder.
+
+        The getter that will replace this returns (or applies the given to_str
+        function to) None for fields that do not exist in the underlying data
+        object.
+
+        :param field_name: The name of the deb822 field.
+        :param from_str: The function to apply for getters (default is to return
+            the string directly).
+        :param to_str: The function to apply for setters (default is to use the
+            value directly).  If allow_none is True, this function may return
+            None, in which case the underlying key is deleted.
+        :param allow_none: Whether it is allowed to set the value to None
+            (which results in the underlying key being deleted).
+        """
+        return super(RestrictedField, cls).__new__(
+            cls, name, from_str=from_str, to_str=to_str,
+            allow_none=allow_none)
+
+
+@six.add_metaclass(_ClassInitMeta)
+class RestrictedWrapper(object):
+    """Base class to wrap a Deb822 object, restricting write access to some keys.
+
+    The underlying data is hidden internally.  Subclasses may keep a reference
+    to the data before giving it to this class's constructor, if necessary, but
+    RestrictedProperty should cover most use-cases.  The dump method from
+    Deb822 is directly proxied.
+
+    Typical usage:
+
+        class Foo(object):
+            def __init__(self, ...):
+                # ...
+
+            @staticmethod
+            def from_str(self, s):
+                # Parse s...
+                return Foo(...)
+
+            def to_str(self):
+                # Return in string format.
+                return ...
+
+        class MyClass(deb822.RestrictedWrapper):
+            def __init__(self):
+                data = deb822.Deb822()
+                data['Bar'] = 'baz'
+                super(MyClass, self).__init__(data)
+
+            foo = deb822.RestrictedProperty(
+                    'Foo', from_str=Foo.from_str, to_str=Foo.to_str)
+
+            bar = deb822.RestrictedProperty('Bar', allow_none=False)
+
+        d = MyClass()
+        d['Bar'] # returns 'baz'
+        d['Bar'] = 'quux' # raises RestrictedFieldError
+        d.bar = 'quux'
+        d.bar # returns 'quux'
+        d['Bar'] # returns 'quux'
+
+        d.foo = Foo(...)
+        d['Foo'] # returns string representation of foo
+    """
+
+    @classmethod
+    def _class_init(cls, new_attrs):
+        restricted_fields = []
+        for attr_name, val in new_attrs.items():
+            if isinstance(val, RestrictedField):
+                restricted_fields.append(val.name.lower())
+                cls.__init_restricted_field(attr_name, val)
+        cls.__restricted_fields = frozenset(restricted_fields)
+
+    @classmethod
+    def __init_restricted_field(cls, attr_name, field):
+        def getter(self):
+            val = self.__data.get(field.name)
+            if field.from_str is not None:
+                return field.from_str(val)
+            return val
+
+        def setter(self, val):
+            if val is not None and field.to_str is not None:
+                val = field.to_str(val)
+            if val is None:
+                if field.allow_none:
+                    if field.name in self.__data:
+                        del self.__data[field.name]
+                else:
+                    raise TypeError('value must not be None')
+            else:
+                self.__data[field.name] = val
+
+        setattr(cls, attr_name, property(getter, setter, None, field.name))
+
+    def __init__(self, data):
+        """Initializes the wrapper over 'data', a Deb822 object."""
+        super(RestrictedWrapper, self).__init__()
+        self.__data = data
+
+    def __getitem__(self, key):
+        return self.__data[key]
+
+    def __setitem__(self, key, value):
+        if key.lower() in self.__restricted_fields:
+            raise RestrictedFieldError(
+                '%s may not be modified directly; use the associated'
+                ' property' % key)
+        self.__data[key] = value
+
+    def __delitem__(self, key):
+        if key.lower() in self.__restricted_fields:
+            raise RestrictedFieldError(
+                '%s may not be modified directly; use the associated'
+                ' property' % key)
+        del self.__data[key]
+
+    def __iter__(self):
+        return iter(self.__data)
+
+    def __len__(self):
+        return len(self.__data)
+
+    def dump(self, *args, **kwargs):
+        """Calls dump() on the underlying data object.
+
+        See Deb822.dump for more information.
+        """
+        return self.__data.dump(*args, **kwargs)
 
 
 class _CaseInsensitiveString(str):
