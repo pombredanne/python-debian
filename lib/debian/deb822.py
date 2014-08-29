@@ -36,25 +36,14 @@ except (ImportError, AttributeError):
     _have_apt_pkg = False
 
 import chardet
+import collections
 import os
 import re
 import subprocess
 import sys
 import warnings
 
-try:
-    from StringIO import StringIO
-    BytesIO = StringIO
-except ImportError:
-    from io import BytesIO, StringIO
-try:
-    from collections import Mapping, MutableMapping
-    _mapping_mixin = Mapping
-    _mutable_mapping_mixin = MutableMapping
-except ImportError:
-    from UserDict import DictMixin
-    _mapping_mixin = DictMixin
-    _mutable_mapping_mixin = DictMixin
+from io import BytesIO, StringIO
 
 import six
 
@@ -77,7 +66,7 @@ GPGV_DEFAULT_KEYRINGS = frozenset(['/usr/share/keyrings/debian-keyring.gpg'])
 GPGV_EXECUTABLE = '/usr/bin/gpgv'
 
 
-class TagSectionWrapper(_mapping_mixin, object):
+class TagSectionWrapper(collections.Mapping):
     """Wrap a TagSection object, using its find_raw method to get field values
 
     This allows us to pick which whitespace to strip off the beginning and end
@@ -158,10 +147,7 @@ class OrderedSet(object):
     ###
 
 
-class Deb822Dict(_mutable_mapping_mixin, object):
-    # Subclassing _mutable_mapping_mixin because we're overriding so much
-    # dict functionality that subclassing dict requires overriding many more
-    # than the methods that _mutable_mapping_mixin requires.
+class Deb822Dict(collections.MutableMapping):
     """A dictionary-like object suitable for storing RFC822-like data.
 
     Deb822Dict behaves like a normal dict, except:
@@ -232,7 +218,7 @@ class Deb822Dict(_mutable_mapping_mixin, object):
         else:
             return value
 
-    ### BEGIN _mutable_mapping_mixin methods
+    ### BEGIN collections.MutableMapping methods
 
     def __iter__(self):
         for key in self.__keys:
@@ -275,7 +261,7 @@ class Deb822Dict(_mutable_mapping_mixin, object):
     if sys.version < '3':
         has_key = __contains__
 
-    ### END _mutable_mapping_mixin methods
+    ### END collections.MutableMapping methods
 
     def __repr__(self):
         return '{%s}' % ', '.join(['%r: %r' % (k, v) for k, v in self.items()])
@@ -1132,7 +1118,7 @@ class _multivalued(Deb822):
             if hasattr(self[key], 'keys'): # single-line
                 array = [ self[key] ]
             else: # multi-line
-                fd.write("\n")
+                fd.write(u"\n")
                 array = self[key]
 
             order = self._multivalued_fields[keyl]
@@ -1152,8 +1138,8 @@ class _multivalued(Deb822):
                     if "\n" in value:
                         raise ValueError("'\\n' not allowed in component of "
                                          "multivalued field %s" % key)
-                    fd.write(" %s" % value)
-                fd.write("\n")
+                    fd.write(u" %s" % value)
+                fd.write(u"\n")
             return fd.getvalue().rstrip("\n")
         else:
             return Deb822.get_as_string(self, key)

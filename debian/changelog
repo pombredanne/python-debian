@@ -20,6 +20,8 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
   * Fix a GPG validation bug.  With some trailing whitespace, the code
     could be tricked into validating a signature, but using the bogus
     data after the signed section (Closes: #695932).
+  * Drop support for python2.5.  (This allows us to do fewer import hacks
+    in deb822, and probably other modules as well.)
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 
