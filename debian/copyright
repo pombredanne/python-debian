@@ -22,11 +22,14 @@ Copyright:
   debfile.py, arfile.py, and examples/debfile/* are
                Copyright (C) 2007   Stefano Zacchiroli  <zack@debian.org> 
                              2007   Filippo Giunchedi   <filippo@debian.org>
-  
+
+  copyright.py and examples/copyright/* are
+               Copyright (C) 2014   Google, Inc.
+
 Licenses:
 
   The following modules are released under GPL v2 or above:
-    changelog.py, debian_support.py, deb822.py
+    changelog.py, debian_support.py, deb822.py, copyright.py
   The following modules are released under GPL v3 or above:
     debfile.py, arfile.py, debtags.py
 
