@@ -249,6 +249,11 @@ class Deb822Dict(collections.MutableMapping):
             else:
                 raise
 
+        # TODO(jsw): Move the decoding logic into __setitem__ so that we decode
+        # it once instead of every time somebody asks for it.  Even better if
+        # Deb822* classes dealt in pure unicode and didn't care about the
+        # encoding of the files they came from...but I don't know how to fix
+        # that without breaking a bunch of users.
         return self._detect_encoding(value)
 
     def __delitem__(self, key):
@@ -490,16 +495,24 @@ class Deb822(Deb822Dict):
         """
         return six.text_type(self[key])
 
-    def dump(self, fd=None, encoding=None):
+    def dump(self, fd=None, encoding=None, text_mode=False):
         """Dump the the contents in the original format
 
-        If fd is None, return a unicode object.
+        If fd is None, returns a unicode object.  Otherwise, fd is assumed to
+        be a file-like object, and this method will write the data to it
+        instead of returning a unicode object.
 
-        If fd is not None, attempt to encode the output to the encoding the
-        object was initialized with, or the value of the encoding argument if
-        it is not None.  This will raise UnicodeEncodeError if the encoding
-        can't support all the characters in the Deb822Dict values.
+        If fd is not none and text_mode is False, the data will be encoded
+        to a byte string before writing to the file.  The encoding used is
+        chosen via the encoding parameter; None means to use the encoding the
+        object was initialized with (utf-8 by default).  This will raise
+        UnicodeEncodeError if the encoding can't support all the characters in
+        the Deb822Dict values.
         """
+        # Ideally this would never try to encode (that should be up to the
+        # caller when opening the file), but we may still have users who rely
+        # on the binary mode encoding.  But...might it be better to break them
+        # than to introduce yet another parameter relating to encoding?
 
         if fd is None:
             fd = StringIO()
@@ -522,7 +535,7 @@ class Deb822(Deb822Dict):
                 entry = '%s:%s\n' % (key, value)
             else:
                 entry = '%s: %s\n' % (key, value)
-            if not return_string:
+            if not return_string and not text_mode:
                 fd.write(entry.encode(encoding))
             else:
                 fd.write(entry)

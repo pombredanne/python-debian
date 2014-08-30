@@ -19,6 +19,7 @@
 
 from __future__ import absolute_import
 
+import io
 import os
 import re
 import sys
@@ -284,6 +285,12 @@ PARSED_PARAGRAPHS_WITH_COMMENTS = [
 def open_utf8(filename, mode='r'):
     """Open a UTF-8 text file in text mode."""
     if sys.version < '3':
+        # TODO(jsw): This isn't actually doing what the docstring says.  The
+        # correct code (for both 2 and 3) is
+        #   io.open(filename, code=mode, encoding='utf-8')
+        # but that makes a couple of other tests fail on 2.x (both related to
+        # apt_pkg - not surprisingly, its behavior with unicode objects isn't
+        # very consistent).
         return open(filename, mode=mode)
     else:
         return open(filename, mode=mode, encoding='UTF-8')
@@ -846,6 +853,13 @@ Description: python modules to work with Debian-related data formats
                              six.u('Frank K\xfcster <frank@debian.org>'))
         f2.close()
         f1.close()
+
+    def test_dump_text_mode(self):
+        d = deb822.Deb822(CHANGES_FILE.splitlines())
+        buf = io.StringIO()
+        d.dump(fd=buf, text_mode=True)
+        self.assertEqual(CHANGES_FILE, buf.getvalue())
+
 
     def test_bug597249_colon_as_first_value_character(self):
         """Colon should be allowed as the first value character. See #597249.

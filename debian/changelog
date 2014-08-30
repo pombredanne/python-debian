@@ -25,6 +25,8 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
   * Add a deb822.RestrictedWrapper class, for exposing read-only access
     to a Deb822 instance's field values as strings, while restricting
     write access to some fields, which are exposed via properties.
+  * deb822.Deb822Dict.dump: Add a text_mode parameter for dumping to
+    file(-like) objects that assume text/unicode input.
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 
