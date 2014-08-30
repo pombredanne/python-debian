@@ -27,6 +27,7 @@ TODO(jsw): Add example usage.
 from __future__ import unicode_literals
 
 import collections
+import itertools
 import re
 import string
 import warnings
@@ -166,6 +167,96 @@ class _SpaceSeparated(object):
         return ' '.join(tmp)
 
 
+# TODO(jsw): Move multiline formatting/parsing elsewhere?
+
+def format_multiline(s):
+    """Formats multiline text for insertion in a Deb822 field.
+
+    Each line except for the first one is prefixed with a single space.  Lines
+    that are blank or only whitespace are replaced with ' .'
+    """
+    if s is None:
+        return None
+    return format_multiline_lines(s.splitlines())
+
+
+def format_multiline_lines(lines):
+    """Same as format_multline, but taking input pre-split into lines."""
+    out_lines = []
+    for i, line in enumerate(lines):
+        if i != 0:
+            if not line.strip():
+                line = '.'
+            line = ' ' + line
+        out_lines.append(line)
+    return '\n'.join(out_lines)
+
+
+def parse_multiline(s):
+    """Inverse of format_multiline.
+
+    Technically it can't be a perfect inverse, since format_multline must
+    replace all-whitespace lines with ' .'.  Specifically, this function:
+      - Does nothing to the first line
+      - Removes first character (which must be ' ') from each proceeding line.
+      - Replaces any line that is '.' with an empty line.
+    """
+    if s is None:
+        return None
+    return '\n'.join(parse_multiline_as_lines(s))
+
+
+def parse_multiline_as_lines(s):
+    """Same as parse_multiline, but returns a list of lines.
+
+    (This is the inverse of format_multiline_lines.)
+    """
+    lines = s.splitlines()
+    for i, line in enumerate(lines):
+        if i == 0:
+            continue
+        if line.startswith(' '):
+            line = line[1:]
+        else:
+            raise ValueError('continued line must begin with " "')
+        if line == '.':
+            line = ''
+        lines[i] = line
+    return lines
+
+
+class License(collections.namedtuple('License', 'synopsis text')):
+    """Represents the contents of a License field.  Immutable."""
+
+    def __new__(cls, synopsis, text=''):
+        """Creates a new License object.
+
+        :param synopsis: The short name of the license, or an expression giving
+            alternatives.  (The first line of a License field.)
+        :param text: The full text of the license, if any (may be None).  The
+            lines should not be mangled for "deb822"-style wrapping - i.e. they
+            should not have whitespace prefixes or single '.' for empty lines.
+        """
+        return super(License, cls).__new__(
+            cls, synopsis=_single_line(synopsis), text=(text or ''))
+
+    @classmethod
+    def from_str(cls, s):
+        if s is None:
+            return None
+
+        lines = parse_multiline_as_lines(s)
+        if not lines:
+            return cls('')
+        return cls(lines[0], text='\n'.join(itertools.islice(lines, 1, None)))
+
+    def to_str(self):
+        return format_multiline_lines([self.synopsis] + self.text.splitlines())
+
+    # TODO(jsw): Parse the synopsis?
+    # TODO(jsw): Provide methods to look up license text for known licenses?
+
+
 class Header(deb822.RestrictedWrapper):
     """Represents the header paragraph of a debian/copyright file.
 
@@ -215,8 +306,7 @@ class Header(deb822.RestrictedWrapper):
 
     comment = deb822.RestrictedField('Comment')
 
-    # TODO(jsw): Parse this.
     license = deb822.RestrictedField(
-        'License', to_str=lambda _: None, from_str=lambda _: None)
+        'License', from_str=License.from_str, to_str=License.to_str)
 
     copyright = deb822.RestrictedField('Copyright')

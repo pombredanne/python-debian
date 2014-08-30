@@ -63,6 +63,28 @@ License: GPL-2+
  [LICENSE TEXT]
 """
 
+GPL_TWO_PLUS_TEXT = """\
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.  See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public
+License along with this package; if not, write to the Free
+Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+Boston, MA  02110-1301 USA
+
+On Debian systems, the full text of the GNU General Public
+License version 2 can be found in the file
+`/usr/share/common-licenses/GPL-2'."""
+
 FORMAT = 'http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/'
 
 
@@ -209,6 +231,120 @@ class CopyrightTest(unittest.TestCase):
         self.assertIsNone(c.header.license)
 
 
+class MultlineTest(unittest.TestCase):
+    """Test cases for format_multiline{,_lines} and parse_multline{,_as_lines}.
+    """
+
+    def setUp(self):
+        paragraphs = list(deb822.Deb822.iter_paragraphs(SIMPLE.splitlines()))
+        self.formatted = paragraphs[1]['License']
+        self.parsed = 'GPL-2+\n' + GPL_TWO_PLUS_TEXT
+        self.parsed_lines = self.parsed.splitlines()
+
+    def test_format_multiline(self):
+        self.assertEqual(None, copyright.format_multiline(None))
+        self.assertEqual('Foo', copyright.format_multiline('Foo'))
+        self.assertEqual(
+            'Foo\n Bar baz\n .\n Quux.',
+            copyright.format_multiline('Foo\nBar baz\n\nQuux.'))
+        self.assertEqual(
+            self.formatted, copyright.format_multiline(self.parsed))
+
+    def test_parse_multiline(self):
+        self.assertEqual(None, copyright.parse_multiline(None))
+        self.assertEqual('Foo', copyright.parse_multiline('Foo'))
+        self.assertEqual(
+            'Foo\nBar baz\n\nQuux.',
+            copyright.parse_multiline('Foo\n Bar baz\n .\n Quux.'))
+        self.assertEqual(
+            self.parsed, copyright.parse_multiline(self.formatted))
+
+    def test_format_multiline_lines(self):
+        self.assertEqual('', copyright.format_multiline_lines([]))
+        self.assertEqual('Foo', copyright.format_multiline_lines(['Foo']))
+        self.assertEqual(
+            'Foo\n Bar baz\n .\n Quux.',
+            copyright.format_multiline_lines(
+                ['Foo', 'Bar baz', '', 'Quux.']))
+        self.assertEqual(
+            self.formatted,
+            copyright.format_multiline_lines(self.parsed_lines))
+
+    def test_parse_multiline_as_lines(self):
+        self.assertEqual([], copyright.parse_multiline_as_lines(''))
+        self.assertEqual(['Foo'], copyright.parse_multiline_as_lines('Foo'))
+        self.assertEqual(
+            ['Foo', 'Bar baz', '', 'Quux.'],
+            copyright.parse_multiline_as_lines(
+                'Foo\n Bar baz\n .\n Quux.'))
+        self.assertEqual(
+            self.parsed_lines,
+            copyright.parse_multiline_as_lines(self.formatted))
+
+    def test_parse_format_inverses(self):
+        self.assertEqual(
+            self.formatted,
+            copyright.format_multiline(
+                copyright.parse_multiline(self.formatted)))
+
+        self.assertEqual(
+            self.formatted,
+            copyright.format_multiline_lines(
+                copyright.parse_multiline_as_lines(self.formatted)))
+
+        self.assertEqual(
+            self.parsed,
+            copyright.parse_multiline(
+                copyright.format_multiline(self.parsed)))
+
+        self.assertEqual(
+            self.parsed_lines,
+            copyright.parse_multiline_as_lines(
+                copyright.format_multiline_lines(self.parsed_lines)))
+
+
+class LicenseTest(unittest.TestCase):
+
+    def test_empty_text(self):
+        l = copyright.License('GPL-2+')
+        self.assertEqual('GPL-2+', l.synopsis)
+        self.assertEqual('', l.text)
+        self.assertEqual('GPL-2+', l.to_str())
+
+    def test_newline_in_synopsis(self):
+        with self.assertRaises(ValueError) as cm:
+            copyright.License('foo\n bar')
+        self.assertEqual(('must be single line',), cm.exception.args)
+
+    def test_nonempty_text(self):
+        text = (
+            'Foo bar.\n'
+            '\n'
+            'Baz.\n'
+            'Quux\n'
+            '\n'
+            'Bang and such.')
+        l = copyright.License('GPL-2+', text=text)
+        self.assertEqual(text, l.text)
+        self.assertEqual(
+            ('GPL-2+\n'
+             ' Foo bar.\n'
+             ' .\n'
+             ' Baz.\n'
+             ' Quux\n'
+             ' .\n'
+             ' Bang and such.'),
+            l.to_str())
+
+    def test_typical(self):
+        paragraphs = list(deb822.Deb822.iter_paragraphs(SIMPLE.splitlines()))
+        p = paragraphs[1]
+        l = copyright.License.from_str(p['license'])
+        self.assertEqual('GPL-2+', l.synopsis)
+        self.assertEqual(GPL_TWO_PLUS_TEXT, l.text)
+        self.assertEqual(p['license'], l.to_str())
+
+
 class HeaderTest(unittest.TestCase):
 
     def test_format_not_none(self):
@@ -267,6 +403,18 @@ class HeaderTest(unittest.TestCase):
         self.assertEqual(
             '\n Foo Bar <foo@bar.com>\n http://bar.com/foo',
             h['upstream-contact'])
+
+    def test_license(self):
+        h = copyright.Header()
+        self.assertIsNone(h.license)
+        l = copyright.License('GPL-2+')
+        h.license = l
+        self.assertEqual(l, h.license)
+        self.assertEqual('GPL-2+', h['license'])
+
+        h.license = None
+        self.assertIsNone(h.license)
+        self.assertFalse('license' in h)
 
 
 if __name__ == '__main__':
