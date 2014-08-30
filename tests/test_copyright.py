@@ -86,6 +86,35 @@ On Debian systems, the full text of the GNU General Public
 License version 2 can be found in the file
 `/usr/share/common-licenses/GPL-2'."""
 
+MULTI_LICENSE = """\
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Project Y
+
+Files: *
+Copyright: Copyright 2000 Company A
+License: ABC
+
+Files: src/baz.*
+Copyright: Copyright 2000 Company A
+           Copyright 2001 Company B
+License: ABC
+
+License: ABC
+ [ABC TEXT]
+
+Files: debian/*
+Copyright: Copyright 2003 Debian Developer <someone@debian.org>
+License: 123
+
+Files: debian/rules
+Copyright: Copyright 2003 Debian Developer <someone@debian.org>
+           Copyright 2004 Someone Else <foo@bar.com>
+License: 123
+
+License: 123
+ [123 TEXT]
+"""
+
 FORMAT = 'http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/'
 
 
@@ -230,6 +259,61 @@ class CopyrightTest(unittest.TestCase):
         self.assertEqual('ftp://ftp.example.com/pub/games', c.header.source)
         self.assertEqual('ftp://ftp.example.com/pub/games', c.header['Source'])
         self.assertIsNone(c.header.license)
+
+    def test_parse_and_dump(self):
+        c = copyright.Copyright(sequence=SIMPLE.splitlines())
+        dumped = c.dump()
+        self.assertEqual(SIMPLE, dumped)
+
+    def test_all_files_paragraphs(self):
+        c = copyright.Copyright(sequence=SIMPLE.splitlines())
+        self.assertEqual(
+            [('*',), ('debian/*',)],
+            [fp.files for fp in c.all_files_paragraphs()])
+
+        c = copyright.Copyright()
+        self.assertEqual([], list(c.all_files_paragraphs()))
+
+    def test_find_files_paragraph(self):
+        c = copyright.Copyright(sequence=SIMPLE.splitlines())
+        paragraphs = list(c.all_files_paragraphs())
+
+        self.assertIs(paragraphs[0], c.find_files_paragraph('Makefile'))
+        self.assertIs(paragraphs[0], c.find_files_paragraph('src/foo.cc'))
+        self.assertIs(paragraphs[1], c.find_files_paragraph('debian/rules'))
+        self.assertIs(paragraphs[1], c.find_files_paragraph('debian/a/b.py'))
+
+    def test_find_files_paragraph_some_unmatched(self):
+        c = copyright.Copyright()
+        files1 = copyright.FilesParagraph.create(
+            ['foo/*'], 'CompanyA', copyright.License('ISC'))
+        files2 = copyright.FilesParagraph.create(
+            ['bar/*'], 'CompanyB', copyright.License('Apache'))
+        c.add_files_paragraph(files1)
+        c.add_files_paragraph(files2)
+        self.assertIs(files1, c.find_files_paragraph('foo/bar.cc'))
+        self.assertIs(files2, c.find_files_paragraph('bar/baz.cc'))
+        self.assertIsNone(c.find_files_paragraph('baz/quux.cc'))
+        self.assertIsNone(c.find_files_paragraph('Makefile'))
+
+    def test_all_license_paragraphs(self):
+        c = copyright.Copyright(sequence=SIMPLE.splitlines())
+        self.assertEqual([], list(c.all_license_paragraphs()))
+
+        c = copyright.Copyright(MULTI_LICENSE.splitlines())
+        self.assertEqual(
+            [copyright.License('ABC', '[ABC TEXT]'),
+             copyright.License('123', '[123 TEXT]')],
+            list(p.license for p in c.all_license_paragraphs()))
+
+        c.add_license_paragraph(copyright.LicenseParagraph.create(
+            copyright.License('Foo', '[FOO TEXT]')))
+        self.assertEqual(
+            [copyright.License('ABC', '[ABC TEXT]'),
+             copyright.License('123', '[123 TEXT]'),
+             copyright.License('Foo', '[FOO TEXT]')],
+            list(p.license for p in c.all_license_paragraphs()))
+
 
 
 class MultlineTest(unittest.TestCase):

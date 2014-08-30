@@ -72,12 +72,24 @@ class Copyright(object):
         """
         super(Copyright, self).__init__()
 
+        self.__paragraphs = []
+
         if sequence is not None:
             paragraphs = list(deb822.Deb822.iter_paragraphs(
                 sequence=sequence, encoding=encoding))
-            if len(paragraphs) > 0:
-                self.__header = Header(paragraphs[0])
-            # TODO(jsw): Parse the rest of the paragraphs.
+            if not paragraphs:
+                raise NotMachineReadableError('no paragraphs in input')
+            self.__header = Header(paragraphs[0])
+            for i in range(1, len(paragraphs)):
+                p = paragraphs[i]
+                if 'Files' in p:
+                    p = FilesParagraph(p)
+                elif 'License' in p:
+                    p = LicenseParagraph(p)
+                else:
+                    warnings.warn('Non-header paragraph has neither "Files"'
+                                  ' nor "License" fields')
+                self.__paragraphs.append(p)
         else:
             self.__header = Header()
 
@@ -91,6 +103,69 @@ class Copyright(object):
         if not isinstance(hdr, Header):
             raise TypeError('value must be a Header object')
         self.__header = hdr
+
+    def all_files_paragraphs(self):
+        """Returns an iterator over the contained FilesParagraph objects."""
+        return (p for p in self.__paragraphs if isinstance(p, FilesParagraph))
+
+    def find_files_paragraph(self, filename):
+        """Returns the FilesParagraph for the given filename.
+
+        In accordance with the spec, this method returns the last FilesParagraph
+        that matches the filename.  If no paragraphs matched, returns None.
+        """
+        result = None
+        for p in self.all_files_paragraphs():
+            if p.matches(filename):
+                result = p
+        return result
+
+    def add_files_paragraph(self, paragraph):
+        """Adds a FilesParagraph to this object.
+
+        The paragraph is inserted directly after the last FilesParagraph (which
+        might be before a standalone LicenseParagraph).
+        """
+        if not isinstance(paragraph, FilesParagraph):
+            raise TypeError('paragraph must be a FilesParagraph instance')
+
+        last_i = -1
+        for i, p in enumerate(self.__paragraphs):
+            if isinstance(p, FilesParagraph):
+                last_i = i
+        self.__paragraphs.insert(last_i + 1, paragraph)
+
+    def all_license_paragraphs(self):
+        """Returns an iterator over standalone LicenseParagraph objects."""
+        return (p for p in self.__paragraphs if isinstance(p, LicenseParagraph))
+
+    def add_license_paragraph(self, paragraph):
+        """Adds a LicenceParagraph to this object.
+
+        The paragraph is inserted after any other paragraphs.
+        """
+        if not isinstance(paragraph, LicenseParagraph):
+            raise TypeError('paragraph must be a LicenseParagraph instance')
+        self.__paragraphs.append(paragraph)
+
+    def dump(self, f=None):
+        """Dumps the contents of the copyright file.
+
+        If f is None, returns a unicode object.  Otherwise, writes the contents
+        to f, which must be a file-like object that is opened in text mode
+        (i.e. that accepts unicode objects directly).  It is thus up to the
+        caller to arrange for the file to do any appropriate encoding.
+        """
+        return_string = False
+        if f is None:
+            return_string = True
+            f = io.StringIO()
+        self.header.dump(f, text_mode=True)
+        for p in self.__paragraphs:
+            f.write('\n')
+            p.dump(f, text_mode=True)
+        if return_string:
+            return f.getvalue()
 
 
 def _single_line(s):
