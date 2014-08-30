@@ -28,8 +28,8 @@ from __future__ import unicode_literals
 
 import collections
 import itertools
+import io
 import re
-import string
 import warnings
 
 from debian import deb822
@@ -255,6 +255,119 @@ class License(collections.namedtuple('License', 'synopsis text')):
 
     # TODO(jsw): Parse the synopsis?
     # TODO(jsw): Provide methods to look up license text for known licenses?
+
+
+def globs_to_re(globs):
+    r"""Returns an re object for the given globs.
+
+    Only * and ? wildcards are supported.  Literal * and ? may be matched via
+    \* and \?, respectively.  A literal backslash is matched \\.  Any other
+    character after a backslash is forbidden.
+
+    Empty globs match nothing.
+
+    Raises ValueError if any of the globs is illegal.
+    """
+    buf = io.StringIO()
+    for i, glob in enumerate(globs):
+        if i != 0:
+            buf.write('|')
+        i = 0
+        n = len(glob)
+        while i < n:
+            c = glob[i]
+            i += 1
+            if c == '*':
+                buf.write('.*')
+            elif c == '?':
+                buf.write('.')
+            elif c == '\\':
+                if i < n:
+                    c = glob[i]
+                    i += 1
+                else:
+                    raise ValueError('single backslash not allowed at end')
+                if c in r'\?*':
+                    buf.write(re.escape(c))
+                else:
+                    raise ValueError(r'invalid escape sequence: \%s' % c)
+            else:
+                buf.write(re.escape(c))
+
+    # Patterns must be anchored at the end of the string.  (We use \Z instead
+    # of $ so that this works correctly for filenames including \n.)
+    buf.write(r'\Z')
+    return re.compile(buf.getvalue(), re.MULTILINE | re.DOTALL)
+
+
+class FilesParagraph(deb822.RestrictedWrapper):
+    """Represents a Files paragraph of a debian/copyright file.
+
+    This kind of paragraph is used to specify the copyright and license for a
+    particular set of files in the package.
+    """
+
+    def __init__(self, data, _internal_validate=True):
+        super(FilesParagraph, self).__init__(data)
+
+        if _internal_validate:
+            if 'Files' not in data:
+                raise ValueError('"Files" field required')
+            # For the other "required" fields, we just warn for now.  Perhaps
+            # these should be upgraded to exceptions (potentially protected by
+            # a "strict" param).
+            if 'Copyright' not in data:
+                warnings.warn('Files paragraph missing Copyright field')
+            if 'License' not in data:
+                warnings.warn('Files paragraph missing License field')
+
+            if not self.files:
+                warnings.warn('Files paragraph has empty Files field')
+
+        self.__cached_files_pat = (None, None)
+
+    @classmethod
+    def create(cls, files, copyright, license):
+        """Create a new FilesParagraph from its required parts.
+
+        :param files: The list of file globs.
+        :param copyright: The copyright for the files (free-form text).
+        :param license: The Licence for the files.
+        """
+        p = cls(deb822.Deb822(), _internal_validate=False)
+        p.files = files
+        p.copyright = copyright
+        p.license = license
+        return p
+
+    def files_pattern(self):
+        """Returns a regular expression equivalent to the Files globs.
+
+        Caches the result until files is set to a different value.
+
+        Raises ValueError if any of the globs are invalid.
+        """
+        files_str = self['files']
+        if self.__cached_files_pat[0] != files_str:
+            self.__cached_files_pat = (files_str, globs_to_re(self.files))
+        return self.__cached_files_pat[1]
+
+    def matches(self, filename):
+        """Returns True iff filename is matched by a glob in Files."""
+        pat = self.files_pattern()
+        return pat.match(filename) is not None
+
+    files = deb822.RestrictedField(
+        'Files', from_str=_SpaceSeparated.from_str,
+        to_str=_SpaceSeparated.to_str, allow_none=False)
+
+    copyright = deb822.RestrictedField('Copyright', allow_none=False)
+
+    license = deb822.RestrictedField(
+        'License', from_str=License.from_str, to_str=License.to_str,
+        allow_none=False)
+
+    comment = deb822.RestrictedField('Comment')
 
 
 class LicenseParagraph(deb822.RestrictedWrapper):

@@ -19,6 +19,7 @@
 
 from __future__ import unicode_literals
 
+import re
 import sys
 import unittest
 
@@ -387,6 +388,188 @@ class LicenseParagraphTest(unittest.TestCase):
             deb822.Deb822({'License': 'GPL-2\n [LICENSE TEXT]'}))
         with self.assertRaises(deb822.RestrictedFieldError):
             lp['Files'] = 'foo/*'
+
+class GlobsToReTest(unittest.TestCase):
+
+    def setUp(self):
+        self.flags = re.MULTILINE | re.DOTALL
+
+    def assertReEqual(self, a, b):
+        self.assertEqual(a.pattern, b.pattern)
+        self.assertEqual(a.flags, b.flags)
+
+    def test_empty(self):
+        self.assertReEqual(
+            re.compile(r'\Z', self.flags), copyright.globs_to_re([]))
+
+    def test_star(self):
+        pat = copyright.globs_to_re(['*'])
+        self.assertReEqual(re.compile(r'.*\Z', self.flags), pat)
+        self.assertTrue(pat.match('foo'))
+        self.assertTrue(pat.match('foo/bar/baz'))
+
+    def test_star_prefix(self):
+        e = re.escape
+        pat = copyright.globs_to_re(['*.in'])
+        expected = re.compile('.*' + e('.in') + r'\Z', self.flags)
+        self.assertReEqual(expected, pat)
+        self.assertFalse(pat.match('foo'))
+        self.assertFalse(pat.match('in'))
+        self.assertTrue(pat.match('Makefile.in'))
+        self.assertFalse(pat.match('foo/bar/in'))
+        self.assertTrue(pat.match('foo/bar/Makefile.in'))
+
+    def test_star_prefix_with_slash(self):
+        e = re.escape
+        pat = copyright.globs_to_re(['*/Makefile.in'])
+        expected = re.compile('.*' + e('/Makefile.in') + r'\Z', self.flags)
+        self.assertReEqual(expected, pat)
+        self.assertFalse(pat.match('foo'))
+        self.assertFalse(pat.match('in'))
+        self.assertFalse(pat.match('foo/bar/in'))
+        self.assertTrue(pat.match('foo/Makefile.in'))
+        self.assertTrue(pat.match('foo/bar/Makefile.in'))
+
+    def test_question_mark(self):
+        e = re.escape
+        pat = copyright.globs_to_re(['foo/messages.??_??.txt'])
+        expected = re.compile(
+            e('foo/messages.') + '..' + e('_') + '..' + e('.txt') + r'\Z',
+            self.flags)
+        self.assertReEqual(expected, pat)
+        self.assertFalse(pat.match('messages.en_US.txt'))
+        self.assertTrue(pat.match('foo/messages.en_US.txt'))
+        self.assertTrue(pat.match('foo/messages.ja_JP.txt'))
+        self.assertFalse(pat.match('foo/messages_ja_JP.txt'))
+
+    def test_multi_literal(self):
+        e = re.escape
+        pat = copyright.globs_to_re(['Makefile.in', 'foo/bar'])
+        expected = re.compile(
+            e('Makefile.in') + '|' + e('foo/bar') + r'\Z', self.flags)
+        self.assertReEqual(expected, pat)
+        self.assertTrue(pat.match('Makefile.in'))
+        self.assertFalse(pat.match('foo/Makefile.in'))
+        self.assertTrue(pat.match('foo/bar'))
+        self.assertFalse(pat.match('foo/barbaz'))
+        self.assertFalse(pat.match('foo/bar/baz'))
+        self.assertFalse(pat.match('a/foo/bar'))
+
+    def test_multi_wildcard(self):
+        e = re.escape
+        pat = copyright.globs_to_re(
+            ['debian/*', '*.Debian', 'translations/fr_??/*'])
+        expected = re.compile(
+            e('debian/') + '.*|.*' + e('.Debian') + '|' +
+            e('translations/fr_') + '..' + e('/') + r'.*\Z',
+            self.flags)
+        self.assertReEqual(expected, pat)
+        self.assertTrue(pat.match('debian/rules'))
+        self.assertFalse(pat.match('other/debian/rules'))
+        self.assertTrue(pat.match('README.Debian'))
+        self.assertTrue(pat.match('foo/bar/README.Debian'))
+        self.assertTrue(pat.match('translations/fr_FR/a.txt'))
+        self.assertTrue(pat.match('translations/fr_BE/a.txt'))
+        self.assertFalse(pat.match('translations/en_US/a.txt'))
+
+    def test_literal_backslash(self):
+        e = re.escape
+        pat = copyright.globs_to_re([r'foo/bar\\baz.c', r'bar/quux\\'])
+        expected = re.compile(
+            e(r'foo/bar\baz.c') + '|' + e('bar/quux\\') + r'\Z', self.flags)
+        self.assertReEqual(expected, pat)
+
+        self.assertFalse(pat.match('foo/bar.baz.c'))
+        self.assertFalse(pat.match('foo/bar/baz.c'))
+        self.assertTrue(pat.match(r'foo/bar\baz.c'))
+        self.assertFalse(pat.match('bar/quux'))
+        self.assertTrue(pat.match('bar/quux\\'))
+
+    def test_illegal_backslash(self):
+        with self.assertRaises(ValueError) as cm:
+            copyright.globs_to_re([r'foo/a\b.c'])
+            self.assertEqual((r'invalid escape sequence: \b',),
+                             cm.exception.args)
+
+        with self.assertRaises(ValueError) as cm:
+            copyright.globs_to_re('foo/bar\\')
+            self.assertEqual(('single backslash not allowed at end',),
+                             cm.exception.args)
+
+
+class FilesParagraphTest(unittest.TestCase):
+
+    def setUp(self):
+        self.prototype = deb822.Deb822()
+        self.prototype['Files'] = '*'
+        self.prototype['Copyright'] = 'Foo'
+        self.prototype['License'] = 'ISC'
+
+    def test_files_property(self):
+        fp = copyright.FilesParagraph(self.prototype)
+        self.assertEqual(('*',), fp.files)
+
+        fp.files = ['debian/*']
+        self.assertEqual(('debian/*',), fp.files)
+        self.assertEqual('debian/*', fp['files'])
+
+        fp.files = ['src/foo/*', 'src/bar/*']
+        self.assertEqual(('src/foo/*', 'src/bar/*'), fp.files)
+        self.assertEqual('src/foo/* src/bar/*', fp['files'])
+
+        with self.assertRaises(TypeError):
+            fp.files = None
+
+        self.prototype['Files'] = 'foo/*\tbar/*\n\tbaz/*\n quux/*'
+        fp = copyright.FilesParagraph(self.prototype)
+        self.assertEqual(('foo/*', 'bar/*', 'baz/*', 'quux/*'), fp.files)
+
+    def test_license_property(self):
+        fp = copyright.FilesParagraph(self.prototype)
+        self.assertEqual(copyright.License('ISC'), fp.license)
+        fp.license = copyright.License('ISC', '[LICENSE TEXT]')
+        self.assertEqual(copyright.License('ISC', '[LICENSE TEXT]'), fp.license)
+        self.assertEqual('ISC\n [LICENSE TEXT]', fp['license'])
+
+        with self.assertRaises(TypeError):
+            fp.license = None
+
+    def test_matches(self):
+        fp = copyright.FilesParagraph(self.prototype)
+        self.assertTrue(fp.matches('foo/bar.cc'))
+        self.assertTrue(fp.matches('Makefile'))
+        self.assertTrue(fp.matches('debian/rules'))
+
+        fp.files = ['debian/*']
+        self.assertFalse(fp.matches('foo/bar.cc'))
+        self.assertFalse(fp.matches('Makefile'))
+        self.assertTrue(fp.matches('debian/rules'))
+
+        fp.files = ['Makefile', 'foo/*']
+        self.assertTrue(fp.matches('foo/bar.cc'))
+        self.assertTrue(fp.matches('Makefile'))
+        self.assertFalse(fp.matches('debian/rules'))
+
+    def test_create(self):
+        fp = copyright.FilesParagraph.create(
+            files=['Makefile', 'foo/*'],
+            copyright='Copyright 2014 Some Guy',
+            license=copyright.License('ISC'))
+        self.assertEqual(('Makefile', 'foo/*'), fp.files)
+        self.assertEqual('Copyright 2014 Some Guy', fp.copyright)
+        self.assertEqual(copyright.License('ISC'), fp.license)
+
+        with self.assertRaises(TypeError):
+            copyright.FilesParagraph.create(
+                files=['*'], copyright='foo', license=None)
+
+        with self.assertRaises(TypeError):
+            copyright.FilesParagraph.create(
+                files=['*'], copyright=None, license=copyright.License('ISC'))
+
+        with self.assertRaises(TypeError):
+            copyright.FilesParagraph.create(
+                files=None, copyright='foo', license=copyright.License('ISC'))
 
 
 class HeaderTest(unittest.TestCase):
