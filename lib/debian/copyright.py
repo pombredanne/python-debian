@@ -499,6 +499,13 @@ class Header(deb822.RestrictedWrapper):
         if data is None:
             data = deb822.Deb822()
             data['Format'] = _CURRENT_FORMAT
+
+        if 'Format-Specification' in data:
+            warnings.warn('use of deprecated "Format-Specification" field;'
+                          ' rewriting as "Format"')
+            data['Format'] = data['Format-Specification']
+            del data['Format-Specification']
+
         super(Header, self).__init__(data)
 
         fmt = self.format
