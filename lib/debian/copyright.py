@@ -257,6 +257,44 @@ class License(collections.namedtuple('License', 'synopsis text')):
     # TODO(jsw): Provide methods to look up license text for known licenses?
 
 
+class LicenseParagraph(deb822.RestrictedWrapper):
+    """Represents a standalone license paragraph of a debian/copyright file.
+
+    Minimally, this kind of paragraph requires a 'License' field and has no
+    'Files' field.  It is used to give a short name to a license text, which
+    can be referred to from the header or files paragraphs.
+    """
+
+    def __init__(self, data, _internal_validate=True):
+        super(LicenseParagraph, self).__init__(data)
+        if _internal_validate:
+            if 'License' not in data:
+                raise ValueError('"License" field required')
+            if 'Files' in data:
+                raise ValueError('input appears to be a Files paragraph')
+
+    @classmethod
+    def create(cls, license):
+        """Returns a LicenseParagraph with the given license."""
+        if not isinstance(license, License):
+            raise TypeError('license must be a License instance')
+        paragraph = cls(deb822.Deb822(), _internal_validate=False)
+        paragraph.license = license
+        return paragraph
+
+    # TODO(jsw): Validate that the synopsis of the license is a short name or
+    # short name with exceptions (not an alternatives expression).  This
+    # requires help from the License class.
+    license = deb822.RestrictedField(
+        'License', from_str=License.from_str, to_str=License.to_str,
+        allow_none=False)
+
+    comment = deb822.RestrictedField('Comment')
+
+    # Hide 'Files'.
+    __files = deb822.RestrictedField('Files')
+
+
 class Header(deb822.RestrictedWrapper):
     """Represents the header paragraph of a debian/copyright file.
 

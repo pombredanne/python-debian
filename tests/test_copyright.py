@@ -345,6 +345,50 @@ class LicenseTest(unittest.TestCase):
         self.assertEqual(p['license'], l.to_str())
 
 
+class LicenseParagraphTest(unittest.TestCase):
+
+    def test_properties(self):
+        d = deb822.Deb822()
+        d['License'] = 'GPL-2'
+        lp = copyright.LicenseParagraph(d)
+        self.assertEqual('GPL-2', lp['License'])
+        self.assertEqual(copyright.License('GPL-2'), lp.license)
+        self.assertIsNone(lp.comment)
+        lp.comment = "Some comment."
+        self.assertEqual("Some comment.", lp.comment)
+        self.assertEqual("Some comment.", lp['comment'])
+
+        lp.license = copyright.License('GPL-2+', '[LICENSE TEXT]')
+        self.assertEqual(
+            copyright.License('GPL-2+', '[LICENSE TEXT]'), lp.license)
+        self.assertEqual('GPL-2+\n [LICENSE TEXT]', lp['license'])
+
+        with self.assertRaises(TypeError) as cm:
+            lp.license = None
+        self.assertEqual(('value must not be None',), cm.exception.args)
+
+    def test_no_license(self):
+        d = deb822.Deb822()
+        with self.assertRaises(ValueError) as cm:
+            copyright.LicenseParagraph(d)
+        self.assertEqual(('"License" field required',), cm.exception.args)
+
+    def test_also_has_files(self):
+        d = deb822.Deb822()
+        d['License'] = 'GPL-2\n [LICENSE TEXT]'
+        d['Files'] = '*'
+        with self.assertRaises(ValueError) as cm:
+            copyright.LicenseParagraph(d)
+        self.assertEqual(
+            ('input appears to be a Files paragraph',), cm.exception.args)
+
+    def test_try_set_files(self):
+        lp = copyright.LicenseParagraph(
+            deb822.Deb822({'License': 'GPL-2\n [LICENSE TEXT]'}))
+        with self.assertRaises(deb822.RestrictedFieldError):
+            lp['Files'] = 'foo/*'
+
+
 class HeaderTest(unittest.TestCase):
 
     def test_format_not_none(self):
