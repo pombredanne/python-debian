@@ -904,6 +904,9 @@ class PkgRelation(object):
             r'(?P<namespace>[^.]+)\.'
             r'(?P<name>[^\s]+)')
 
+    ArchRestriction = collections.namedtuple('ArchRestriction',
+            ['enabled', 'arch'])
+
     @classmethod
     def parse_relations(cls, raw):
         """Parse a package relationship string (i.e. the value of a field like
@@ -913,10 +916,10 @@ class PkgRelation(object):
             # assumption: no space between '!' and architecture name
             archs = []
             for arch in cls.__blank_sep_RE.split(raw.strip()):
-                if len(arch) and arch[0] == '!':
-                    archs.append((False, arch[1:]))
-                else:
-                    archs.append((True, arch))
+                disabled = arch[0] == '!'
+                if disabled:
+                    arch = arch[1:]
+                archs.append(cls.ArchRestriction(not disabled, arch))
             return archs
 
         def parse_profiles(raw):
@@ -978,11 +981,10 @@ class PkgRelation(object):
         suitable to be written in a package stanza.
         """
         def pp_arch(arch_spec):
-            (excl, arch) = arch_spec
-            if excl:
-                return arch
-            else:
-                return '!' + arch
+            return '%s%s' % (
+                    '' if arch_spec.enabled else '!',
+                    arch_spec.arch,
+                )
 
         def pp_atomic_dep(dep):
             s = dep['name']
