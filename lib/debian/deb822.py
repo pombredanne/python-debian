@@ -894,18 +894,20 @@ class PkgRelation(object):
             r'(\s*\(\s*(?P<relop>[>=<]+)\s*'
             r'(?P<version>[0-9a-zA-Z:\-+~.]+)\s*\))?'
             r'(\s*\[(?P<archs>[\s!\w\-]+)\])?\s*'
-            r'(<(?P<restrictions>.+)>)?\s*'
+            r'((?P<restrictions><.+>))?\s*'
             r'$')
     __comma_sep_RE = re.compile(r'\s*,\s*')
     __pipe_sep_RE = re.compile(r'\s*\|\s*')
     __blank_sep_RE = re.compile(r'\s*')
+    __restriction_sep_RE = re.compile(r'>\s*<')
     __restriction_RE = re.compile(
             r'(?P<enabled>\!)?'
-            r'(?P<namespace>[^.]+)\.'
-            r'(?P<name>[^\s]+)')
+            r'(?P<profile>[^\s]+)')
 
     ArchRestriction = collections.namedtuple('ArchRestriction',
             ['enabled', 'arch'])
+    BuildRestriction = collections.namedtuple('BuildRestriction',
+            ['enabled', 'profile'])
 
     @classmethod
     def parse_relations(cls, raw):
@@ -922,27 +924,29 @@ class PkgRelation(object):
                 archs.append(cls.ArchRestriction(not disabled, arch))
             return archs
 
-        def parse_profiles(raw):
-            """ split a string of restrictions into a list of restrictions
+        def parse_restrictions(raw):
+            """ split a restriction formula into a list of restriction lists
 
-            Each restriction is a tuple of form:
+            Each term in the restriction list is a namedtuple of form:
 
-                (active, (namespace, name))
+                (enabled, label)
 
             where
-                active: boolean: whether the restriction is positive or negative
-                namespace: the namespace of the restriction e.g. 'profile'
-                name: the name of the restriction e.g. 'stage1'
+                enabled: boolean: whether the restriction is positive or negative
+                profile: the profile name of the term e.g. 'stage1'
             """
             restrictions = []
-            for restriction in cls.__blank_sep_RE.split(raw.lower().strip()):
-                match = cls.__restriction_RE.match(restriction)
-                if match:
-                    parts = match.groupdict()
-                    restrictions.append((
-                                    parts['enabled'] != '!',
-                                    (parts['namespace'], parts['name']),
-                                ))
+            for rgrp in cls.__restriction_sep_RE.split(raw.lower().strip('<> ')):
+                group = []
+                for restriction in cls.__blank_sep_RE.split(rgrp):
+                    match = cls.__restriction_RE.match(restriction)
+                    if match:
+                        parts = match.groupdict()
+                        group.append(cls.BuildRestriction(
+                                        parts['enabled'] != '!',
+                                        parts['profile'],
+                                    ))
+                restrictions.append(group)
             return restrictions
 
 
@@ -962,7 +966,7 @@ class PkgRelation(object):
                 if parts['archs']:
                     d['arch'] = parse_archs(parts['archs'])
                 if parts['restrictions']:
-                    d['restrictions'] = parse_profiles(parts['restrictions'])
+                    d['restrictions'] = parse_restrictions(parts['restrictions'])
                 return d
             else:
                 warnings.warn('cannot parse package' \
@@ -986,12 +990,24 @@ class PkgRelation(object):
                     arch_spec.arch,
                 )
 
+        def pp_restrictions(restrictions):
+            s = []
+            for term in restrictions:
+                s.append('%s%s' % (
+                            '' if term.enabled else '!',
+                            term.profile
+                        )
+                    )
+            return '<%s>' % ' '.join(s)
+
         def pp_atomic_dep(dep):
             s = dep['name']
             if dep.get('version') is not None:
                 s += ' (%s %s)' % dep['version']
             if dep.get('arch') is not None:
                 s += ' [%s]' % ' '.join(map(pp_arch, dep['arch']))
+            if dep.get('restrictions') is not None:
+                s += ' %s' % ' '.join(map(pp_restrictions, dep['restrictions']))
             return s
 
         pp_or_dep = lambda deps: ' | '.join(map(pp_atomic_dep, deps))
@@ -1058,7 +1074,7 @@ class _PkgRelationMixin(object):
 
         The encoding of package relationships is as follows:
         - the top-level lists corresponds to the comma-separated list of
-          Deb822, their components form a conjuction, i.e. they have to be
+          Deb822, their components form a conjunction, i.e. they have to be
           AND-ed together
         - the inner lists corresponds to the pipe-separated list of Deb822,
           their components form a disjunction, i.e. they have to be OR-ed
@@ -1069,11 +1085,24 @@ class _PkgRelationMixin(object):
                         versioned, None otherwise. operator is one of "<<",
                         "<=", "=", ">=", ">>"; version is the given version as
                         a string.
-          - arch:       A list of pairs <polarity, architecture> if the
+          - arch:       A list of pairs <enabled, arch> if the
                         relationship is architecture specific, None otherwise.
-                        Polarity is a boolean (false if the architecture is
-                        negated with "!", true otherwise), architecture the
-                        Debian archtiecture name as a string.
+                        Enabled is a boolean (false if the architecture is
+                        negated with "!", true otherwise), arch the
+                        Debian architecture name as a string.
+          - restrictions: A list of lists of tuples <enabled, profile>
+                        if there is a restriction formula defined, None
+                        otherwise. Each list of tuples represents a restriction
+                        list while each tuple represents an individual term
+                        within the restriction list. Enabled is a boolean
+                        (false if the restriction is negated with "!", true
+                        otherwise). The profile is the name of the build
+                        restriction.
+                        https://wiki.debian.org/BuildProfileSpec
+
+          The arch and restrictions tuples are available as named tuples so
+          elements are available as term[0] or alternatively as
+          term.enabled (and so forth).
 
         Examples:
 
@@ -1085,6 +1114,10 @@ class _PkgRelationMixin(object):
           "tcl8.4-dev, procps [!hurd-i386]"                 becomes
           [ [ {'name': 'tcl8.4-dev'} ],
             [ {'name': 'procps', 'arch': (false, 'hurd-i386')} ] ]
+
+          "texlive <!cross>"                                becomes
+          [ [ {'name': 'texlive',
+                    'restriction': [[(false, 'cross')]]} ] ]
         """
         if not self.__parsed_relations:
             lazy_rels = filter(lambda n: self.__relations[n] is None,

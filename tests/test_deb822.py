@@ -1064,9 +1064,11 @@ class TestPkgRelations(unittest.TestCase):
         f.close()
 
         bin_rels = ['file, libc6 (>= 2.7-1), libpaper1, psutils']
-        src_rels = ['apache2-src (>= 2.2.9), libaprutil1-dev, ' \
-                'libcap-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], ' \
-                'autoconf, debhelper (>> 5.0.0)']
+        src_rels = ['apache2-src (>= 2.2.9), libaprutil1-dev, '
+                'libcap-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], '
+                'autoconf <!cross>, '
+                'debhelper (>> 5.0.0) '
+                '<!stage1> <!cross !stage2>']
         for bin_rel in bin_rels:
             self.assertEqual(bin_rel,
                     deb822.PkgRelation.str(deb822.PkgRelation.parse_relations(
@@ -1112,10 +1114,14 @@ class TestPkgRelations(unittest.TestCase):
                         [rel({'name': 'flex'})],
                         [rel({'name': 'gettext', 'archqual': 'any'})],
                         [rel({'name': 'texinfo',
-                            'restrictions': [(False, ('profile', 'stage1')), (False, ('profile', 'cross'))]})],
+                            'restrictions': [
+                                [(False, 'stage1')],
+                                [(False, 'stage2'),
+                                 (False, 'cross')]
+                            ]})],
                         [rel({'arch': [(True, 'hppa')], 'name': 'expect-tcl8.3',
                             'version': ('>=', '5.32.2'),
-                            'restrictions': [(False, ('profile', 'stage1'))]})],
+                            'restrictions': [[(False, 'stage1')]]})],
                         [rel({'name': 'dejagnu', 'version': ('>=', '1.4.2-1.1'), 'arch': None})],
                         [rel({'name': 'dpatch'})],
                         [rel({'name': 'file'})],
@@ -1135,6 +1141,31 @@ class TestPkgRelations(unittest.TestCase):
                 }
         self.assertPkgDictEqual(rel2, pkg2.relations)
         f.close()
+
+    def test_restrictions_parse(self):
+        """ test parsing of restriction formulas """
+        r = "foo <cross>"
+        # relation 0, alternative 0, restrictions set 0, condition 0
+        term = deb822.PkgRelation.parse_relations(r)[0][0]['restrictions'][0][0]
+        self.assertEqual(term.enabled, True)
+        self.assertEqual(term[0], True)
+        self.assertEqual(term.profile, 'cross')
+        self.assertEqual(term[1], 'cross')
+
+        r = "foo <!stage1> <!stage2 !cross>"
+        # relation 0, alternative 0, restrictions set 1, condition 0
+        term = deb822.PkgRelation.parse_relations(r)[0][0]['restrictions'][1][0]
+        self.assertEqual(term.enabled, False)
+        self.assertEqual(term[0], False)
+        self.assertEqual(term.profile, 'stage2')
+        self.assertEqual(term[1], 'stage2')
+
+        # relation 0, alternative 0, restrictions set 1, condition 1
+        term = deb822.PkgRelation.parse_relations(r)[0][0]['restrictions'][1][1]
+        self.assertEqual(term.enabled, False)
+        self.assertEqual(term[0], False)
+        self.assertEqual(term.profile, 'cross')
+        self.assertEqual(term[1], 'cross')
 
 
 class TestGpgInfo(unittest.TestCase):

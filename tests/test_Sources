@@ -26,7 +26,7 @@ Version: 2.18.1~cvs20080103-6
 Priority: optional
 Section: devel
 Maintainer: James Troup <james@nocrew.org>
-Build-Depends: dpkg-dev (>= 1.13.9), autoconf (>= 2.13), bash, bison:amd64, flex, gettext:any, texinfo <!profile.stage1 !profile.cross>, expect-tcl8.3 (>= 5.32.2) [hppa] <!profile.stage1>, dejagnu (>= 1.4.2-1.1), dpatch, file, bzip2:native, lsb-release
+Build-Depends: dpkg-dev (>= 1.13.9), autoconf (>= 2.13), bash, bison:amd64, flex, gettext:any, texinfo <!stage1> <!stage2 !cross>, expect-tcl8.3 (>= 5.32.2) [hppa] <!stage1>, dejagnu (>= 1.4.2-1.1), dpatch, file, bzip2:native, lsb-release
 Architecture: any
 Standards-Version: 3.7.3
 Format: 1.0
