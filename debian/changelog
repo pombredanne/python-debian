@@ -27,6 +27,8 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
     write access to some fields, which are exposed via properties.
   * deb822.Deb822Dict.dump: Add a text_mode parameter for dumping to
     file(-like) objects that assume text/unicode input.
+  * Add a copyright module, for parsing machine-readable debian/copyright
+    files (Closes: #671485).
 
  -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
 
