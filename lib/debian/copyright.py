@@ -21,7 +21,7 @@
 The specification for the format (also known as DEP5) is available here:
 https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
-TODO(jsw): Add example usage.
+Start from the Coyright docstring for usage information.
 """
 
 from __future__ import unicode_literals
@@ -54,7 +54,41 @@ class NotMachineReadableError(Error):
 
 
 class Copyright(object):
-    """Represents a debian/copyright file."""
+    """Represents a debian/copyright file.
+
+    A Copyright object contains a Header paragraph and a list of additional
+    Files or License paragraphs.  It provides methods to iterate over those
+    paragraphs, in addition to adding new ones.  It also provides a mechanism
+    for finding the Files paragraph (if any) that matches a particular
+    filename.
+
+    Typical usage:
+
+        with io.open('debian/copyright', 'rt', encoding='utf-8') as f:
+            c = copyright.Copyright(f)
+
+            header = c.header
+            # Header exposes standard fields, e.g.
+            print('Upstream name: ', header.upstream_name)
+            lic = header.license
+            if lic:
+                print('Overall license: ', lic.synopsis)
+            # You can also retrive and set custom fields.
+            header['My-Special-Field'] = 'Very special'
+
+            # Find the license for a given file.
+            paragraph = c.find_files_paragraph('debian/rules')
+            if paragraph:
+                print('License for debian/rules: ', paragraph.license)
+
+            # Dump the result, including changes, to another file.
+            with io.open('debian/copyright.new', 'wt', encoding='utf-8') as f:
+                c.dump(f=f)
+
+    It is possible to build up a Copyright from scratch, by modifying the
+    header and using add_files_paragraph and add_license_paragraph.  See the
+    associated method docstrings.
+    """
 
     def __init__(self, sequence=None, encoding='utf-8'):
         """Initializer.
