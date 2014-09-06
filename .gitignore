@@ -1,0 +1,12 @@
+*.pyc
+*.swp
+README.debtags
+.pybuild
+*.egg-info
+setup.py
+debian/files
+debian/*.debhelper.log
+debian/*.debhelper                                                                                                   
+debian/*.substvars
+debian/python-debian/
+debian/python3-debian/
