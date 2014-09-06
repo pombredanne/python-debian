@@ -1,4 +1,4 @@
-python-debian (0.1.23) UNRELEASED; urgency=medium
+python-debian (0.1.24) UNRELEASED; urgency=medium
 
   [ Stuart Prescott ]
   * Add sha512 sums to Release and Sources (Closes: #732599).
@@ -29,8 +29,10 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
     file(-like) objects that assume text/unicode input.
   * Add a copyright module, for parsing machine-readable debian/copyright
     files (Closes: #671485).
+  * Make deb822 tests hermetic with respect to debian-keyring updates
+    (Closes: #760488).
 
- -- Stuart Prescott <stuart@debian.org>  Fri, 13 Jun 2014 00:27:59 +1000
+ -- John Wright <jsw@debian.org>  Sat, 06 Sep 2014 01:35:24 -0700
 
 python-debian (0.1.22) unstable; urgency=low
 

@@ -34,7 +34,7 @@ except ImportError:
 
 import six
 
-sys.path.insert(0, '../lib/')
+sys.path.insert(0, '../lib')
 
 from debian import deb822
 
@@ -281,6 +281,8 @@ PARSED_PARAGRAPHS_WITH_COMMENTS = [
     ]),
 ]
 
+KEYRING = os.path.abspath('test-keyring.gpg')
+
 
 def open_utf8(filename, mode='r'):
     """Open a UTF-8 text file in text mode."""
@@ -402,17 +404,16 @@ class TestDeb822(unittest.TestCase):
             self.assertWellParsed(deb822_, PARSED_PACKAGE)
 
     def test_gpg_info(self):
-        if not (os.path.exists('/usr/bin/gpgv') and
-                os.path.exists('/usr/share/keyrings/debian-keyring.gpg')):
+        if not os.path.exists('/usr/bin/gpgv'):
             return
 
         unparsed_with_gpg = SIGNED_CHECKSUM_CHANGES_FILE % CHECKSUM_CHANGES_FILE
         deb822_from_str = deb822.Dsc(unparsed_with_gpg)
-        result_from_str = deb822_from_str.get_gpg_info()
+        result_from_str = deb822_from_str.get_gpg_info(keyrings=[KEYRING])
         deb822_from_file = deb822.Dsc(StringIO(unparsed_with_gpg))
-        result_from_file = deb822_from_file.get_gpg_info()
+        result_from_file = deb822_from_file.get_gpg_info(keyrings=[KEYRING])
         deb822_from_lines = deb822.Dsc(unparsed_with_gpg.splitlines())
-        result_from_lines = deb822_from_lines.get_gpg_info()
+        result_from_lines = deb822_from_lines.get_gpg_info(keyrings=[KEYRING])
 
         valid = {
          'GOODSIG':  ['D14219877A786561', 'John Wright <john.wright@hp.com>'],
@@ -434,13 +435,12 @@ class TestDeb822(unittest.TestCase):
             self.assertEqual(result['SIG_ID'][1:], valid['SIG_ID'][1:])
 
     def test_gpg_info2(self):
-        if not (os.path.exists('/usr/bin/gpgv') and
-                os.path.exists('/usr/share/keyrings/debian-keyring.gpg')):
+        if not os.path.exists('/usr/bin/gpgv'):
             return
 
         with open('test_Dsc.badsig', mode='rb') as f:
             dsc = deb822.Dsc(f)
-            i = dsc.get_gpg_info()
+            i = dsc.get_gpg_info(keyrings=[KEYRING])
             self.assertTrue(i.valid())
             self.assertEqual('at', dsc['Source'])
 
@@ -1140,12 +1140,10 @@ class TestPkgRelations(unittest.TestCase):
 class TestGpgInfo(unittest.TestCase):
 
     def setUp(self):
-        # These tests can only run with gpgv and a keyring available.  When we
-        # can use Python >= 2.7, we can use the skip decorator; for now just
-        # check in each test method whether we should actually run.
-        self.should_run = (
-            os.path.exists('/usr/bin/gpgv') and
-            os.path.exists('/usr/share/keyrings/debian-keyring.gpg'))
+        # These tests can only run with gpgv available.  When we can use Python
+        # >= 2.7, we can use the skip decorator; for now just check in each
+        # test method whether we should actually run.
+        self.should_run = os.path.exists('/usr/bin/gpgv')
 
         self.data = SIGNED_CHECKSUM_CHANGES_FILE % CHECKSUM_CHANGES_FILE
         self.data = self.data.encode()
@@ -1174,7 +1172,7 @@ class TestGpgInfo(unittest.TestCase):
         if not self.should_run:
             return
 
-        gpg_info = deb822.GpgInfo.from_sequence(self.data)
+        gpg_info = deb822.GpgInfo.from_sequence(self.data, keyrings=[KEYRING])
         self._validate_gpg_info(gpg_info)
 
     def test_from_sequence_newline_terminated(self):
@@ -1182,7 +1180,7 @@ class TestGpgInfo(unittest.TestCase):
             return
 
         sequence = BytesIO(self.data)
-        gpg_info = deb822.GpgInfo.from_sequence(sequence)
+        gpg_info = deb822.GpgInfo.from_sequence(sequence, keyrings=[KEYRING])
         self._validate_gpg_info(gpg_info)
 
     def test_from_sequence_no_newlines(self):
@@ -1190,7 +1188,7 @@ class TestGpgInfo(unittest.TestCase):
             return
 
         sequence = self.data.splitlines()
-        gpg_info = deb822.GpgInfo.from_sequence(sequence)
+        gpg_info = deb822.GpgInfo.from_sequence(sequence, keyrings=[KEYRING])
         self._validate_gpg_info(gpg_info)
 
     def test_from_file(self):
@@ -1203,7 +1201,7 @@ class TestGpgInfo(unittest.TestCase):
         fp.close()
 
         try:
-            gpg_info = deb822.GpgInfo.from_file(filename)
+            gpg_info = deb822.GpgInfo.from_file(filename, keyrings=[KEYRING])
         finally:
             os.remove(filename)
 
