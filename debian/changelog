@@ -1,10 +1,10 @@
-python-debian (0.1.24) UNRELEASED; urgency=medium
+python-debian (0.1.23) UNRELEASED; urgency=medium
 
   [ Stuart Prescott ]
   * Add sha512 sums to Release and Sources (Closes: #732599).
   * Use warnings rather than stderr in PkgRelation (Closes: #712513).
-  * Expose the list of bugs closed by a changelog entry; thanks to Jelmer Vernooi
-    and Stefano Rivera for patches (Closes: #634848).
+  * Expose the list of bugs closed by a changelog entry; thanks to Jelmer
+    Vernooi and Stefano Rivera for patches (Closes: #634848).
   * Add support for .deb with uncompressed data.tar member (Closes: #718355).
   * Prefer the internal parser rather than apt's TagFile for processing deb822
     files unless explicitly called to process Packages or Sources files:
