@@ -1138,7 +1138,7 @@ class _multivalued(Deb822):
             if hasattr(self[key], 'keys'): # single-line
                 array = [ self[key] ]
             else: # multi-line
-                fd.write(u"\n")
+                fd.write(six.u("\n"))
                 array = self[key]
 
             order = self._multivalued_fields[keyl]
@@ -1158,8 +1158,8 @@ class _multivalued(Deb822):
                     if "\n" in value:
                         raise ValueError("'\\n' not allowed in component of "
                                          "multivalued field %s" % key)
-                    fd.write(u" %s" % value)
-                fd.write(u"\n")
+                    fd.write(six.u(" %s") % value)
+                fd.write(six.u("\n"))
             return fd.getvalue().rstrip("\n")
         else:
             return Deb822.get_as_string(self, key)
