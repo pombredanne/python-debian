@@ -2,14 +2,29 @@ Source: python-debian
 Section: python
 Priority: optional
 Maintainer: Debian python-debian Maintainers <pkg-python-debian-maint@lists.alioth.debian.org>
-Uploaders: Adeodato Simó <dato@net.com.org.es>,
+Uploaders:
+ Adeodato Simó <dato@net.com.org.es>,
  Enrico Zini <enrico@debian.org>,
  James Westby <jw+debian@jameswestby.net>,
  Reinhard Tartler <siretart@tauware.de>,
  Stefano Zacchiroli <zack@debian.org>,
  John Wright <jsw@debian.org>,
  Stuart Prescott <stuart@debian.org>
-Build-Depends: debhelper (>= 9), dh-python, python-all (>= 2.6.6-3~), python3-all (>= 3.1.2-8~), python-setuptools, python3-setuptools, python-apt, python3-apt, python-chardet, python3-chardet, python-nose, python3-nose, python-six, python3-six
+Build-Depends:
+ debhelper (>= 9),
+ dh-python,
+ python-all (>= 2.6.6-3~),
+ python-apt,
+ python-chardet,
+ python-nose,
+ python-setuptools,
+ python-six,
+ python3-all (>= 3.1.2-8~),
+ python3-apt,
+ python3-chardet,
+ python3-nose,
+ python3-setuptools,
+ python3-six
 Standards-Version: 3.9.5
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-python-debian/python-debian.git
 Vcs-Git: git://anonscm.debian.org/pkg-python-debian/python-debian.git
@@ -18,12 +33,21 @@ XS-Testsuite: autopkgtest
 
 Package: python-debian
 Architecture: all
-Depends: ${python:Depends}, ${misc:Depends}, python-chardet, python-six
-Recommends: python-apt
-Suggests: gpgv
-Provides: python-deb822
-Conflicts: python-deb822
-Replaces: python-deb822
+Depends:
+ python-chardet,
+ python-six,
+ ${misc:Depends},
+ ${python:Depends}
+Recommends:
+ python-apt
+Suggests:
+ gpgv
+Provides:
+ python-deb822
+Conflicts:
+ python-deb822
+Replaces:
+ python-deb822
 Description: Python modules to work with Debian-related data formats
  This package provides Python modules that abstract many formats of Debian
  related files. Currently handled are:
@@ -38,9 +62,15 @@ Description: Python modules to work with Debian-related data formats
 
 Package: python3-debian
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, python3-chardet, python3-six
-Recommends: python3-apt
-Suggests: gpgv
+Depends:
+ python3-chardet,
+ python3-six,
+ ${misc:Depends},
+ ${python3:Depends}
+Recommends:
+ python3-apt
+Suggests:
+ gpgv
 Description: Python 3 modules to work with Debian-related data formats
  This package provides Python 3 modules that abstract many formats of Debian
  related files. Currently handled are:
@@ -52,4 +82,3 @@ Description: Python 3 modules to work with Debian-related data formats
     (debian.deb822 module)
   * Raw .deb and .ar files, with (read-only) access to contained
     files and meta-information
-
