@@ -1,4 +1,4 @@
-python-debian (0.1.23) UNRELEASED; urgency=medium
+python-debian (0.1.23) unstable; urgency=medium
 
   [ Stuart Prescott ]
   * Add sha512 sums to Release and Sources (Closes: #732599).
@@ -32,7 +32,7 @@ python-debian (0.1.23) UNRELEASED; urgency=medium
   * Make deb822 tests hermetic with respect to debian-keyring updates
     (Closes: #760488).
 
- -- John Wright <jsw@debian.org>  Sat, 06 Sep 2014 01:35:24 -0700
+ -- John Wright <jsw@debian.org>  Wed, 10 Sep 2014 23:18:38 -0700
 
 python-debian (0.1.22) unstable; urgency=low
 
