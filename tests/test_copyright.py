@@ -99,9 +99,6 @@ Copyright: Copyright 2000 Company A
            Copyright 2001 Company B
 License: ABC
 
-License: ABC
- [ABC TEXT]
-
 Files: debian/*
 Copyright: Copyright 2003 Debian Developer <someone@debian.org>
 License: 123
@@ -110,6 +107,9 @@ Files: debian/rules
 Copyright: Copyright 2003 Debian Developer <someone@debian.org>
            Copyright 2004 Someone Else <foo@bar.com>
 License: 123
+
+License: ABC
+ [ABC TEXT]
 
 License: 123
  [123 TEXT]
@@ -264,6 +264,12 @@ class CopyrightTest(unittest.TestCase):
         c = copyright.Copyright(sequence=SIMPLE.splitlines())
         dumped = c.dump()
         self.assertEqual(SIMPLE, dumped)
+
+    def test_all_paragraphs(self):
+        c = copyright.Copyright(MULTI_LICENSE.splitlines())
+        expected = [c.header] + list(c.all_files_paragraphs()) + \
+            list(c.all_license_paragraphs())
+        self.assertEqual(expected, list(c.all_paragraphs()))
 
     def test_all_files_paragraphs(self):
         c = copyright.Copyright(sequence=SIMPLE.splitlines())

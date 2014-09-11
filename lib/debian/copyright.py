@@ -138,6 +138,16 @@ class Copyright(object):
             raise TypeError('value must be a Header object')
         self.__header = hdr
 
+    def all_paragraphs(self):
+        """Returns an iterator over all paragraphs (header, Files, License).
+
+        The header (returned first) will be returned as a Header object; file
+        paragraphs as FilesParagraph objects; license paragraphs as
+        LicenseParagraph objects.
+
+        """
+        return itertools.chain([self.header], (p for p in self.__paragraphs))
+
     def all_files_paragraphs(self):
         """Returns an iterator over the contained FilesParagraph objects."""
         return (p for p in self.__paragraphs if isinstance(p, FilesParagraph))
