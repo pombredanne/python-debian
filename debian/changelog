@@ -1,3 +1,10 @@
+python-debian (0.1.24) UNRELEASED; urgency=medium
+
+  [ Stefano Zacchiroli ]
+  * copyright module: make Copyright objects iterable
+
+ -- Stefano Zacchiroli <zack@debian.org>  Sat, 13 Sep 2014 09:23:14 +0200
+
 python-debian (0.1.23) unstable; urgency=medium
 
   [ Stuart Prescott ]
