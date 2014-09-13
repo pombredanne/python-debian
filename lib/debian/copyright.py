@@ -148,6 +148,14 @@ class Copyright(object):
         """
         return itertools.chain([self.header], (p for p in self.__paragraphs))
 
+    def __iter__(self):
+        """Iterate over all paragraphs
+
+        see all_paragraphs() for more information
+
+        """
+        return self.all_paragraphs()
+
     def all_files_paragraphs(self):
         """Returns an iterator over the contained FilesParagraph objects."""
         return (p for p in self.__paragraphs if isinstance(p, FilesParagraph))

@@ -270,6 +270,7 @@ class CopyrightTest(unittest.TestCase):
         expected = [c.header] + list(c.all_files_paragraphs()) + \
             list(c.all_license_paragraphs())
         self.assertEqual(expected, list(c.all_paragraphs()))
+        self.assertEqual(expected, list(c))
 
     def test_all_files_paragraphs(self):
         c = copyright.Copyright(sequence=SIMPLE.splitlines())
