@@ -176,9 +176,9 @@ class ReleaseTests(unittest.TestCase):
     """Tests for debian_support.Release"""
 
     def test_comparison(self):
-        self.assertTrue(intern_release('buzz') < intern_release('hamm'))
-        self.assertTrue(intern_release('sarge') < intern_release('etch'))
-        self.assertTrue(intern_release('lenny') < intern_release('squeeze'))
+        self.assertLess(intern_release('buzz'), intern_release('hamm'))
+        self.assertLess(intern_release('sarge'), intern_release('etch'))
+        self.assertLess(intern_release('lenny'), intern_release('squeeze'))
 
 
 class HelperRoutineTests(unittest.TestCase):
