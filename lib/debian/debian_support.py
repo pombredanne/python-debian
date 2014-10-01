@@ -414,7 +414,12 @@ class Release(PseudoEnum): pass
 
 def list_releases():
     releases = {}
-    rels = ("potato", "woody", "sarge", "etch", "lenny", "sid")
+    rels = ("potato",
+            "woody",
+            "sarge",
+            "etch",
+            "lenny",
+            "sid")
     for r in range(len(rels)):
         releases[rels[r]] = Release(rels[r], r)
     Release.releases = releases
