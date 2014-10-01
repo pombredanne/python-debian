@@ -177,6 +177,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_comparison(self):
         self.assertTrue(intern_release('sarge') < intern_release('etch'))
+        self.assertTrue(intern_release('lenny') < intern_release('squeeze'))
 
 
 class HelperRoutineTests(unittest.TestCase):

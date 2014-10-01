@@ -419,6 +419,9 @@ def list_releases():
             "sarge",
             "etch",
             "lenny",
+            "squeeze",
+            "wheezy",
+            "jessie",
             "sid")
     for r in range(len(rels)):
         releases[rels[r]] = Release(rels[r], r)
