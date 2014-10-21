@@ -1,0 +1,78 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Format: 1.8
+Date: Wed, 10 Sep 2014 23:18:38 -0700
+Source: python-debian
+Binary: python-debian python3-debian
+Architecture: source all
+Version: 0.1.23
+Distribution: unstable
+Urgency: medium
+Maintainer: Debian python-debian Maintainers <pkg-python-debian-maint@lists.alioth.debian.org>
+Changed-By: John Wright <jsw@debian.org>
+Description:
+ python-debian - Python modules to work with Debian-related data formats
+ python3-debian - Python 3 modules to work with Debian-related data formats
+Closes: 634848 655988 670679 671485 695932 712513 718355 732599 743174 760488
+Changes:
+ python-debian (0.1.23) unstable; urgency=medium
+ .
+   [ Stuart Prescott ]
+   * Add sha512 sums to Release and Sources (Closes: #732599).
+   * Use warnings rather than stderr in PkgRelation (Closes: #712513).
+   * Expose the list of bugs closed by a changelog entry; thanks to Jelmer
+     Vernooi and Stefano Rivera for patches (Closes: #634848).
+   * Add support for .deb with uncompressed data.tar member (Closes: #718355).
+   * Prefer the internal parser rather than apt's TagFile for processing deb822
+     files unless explicitly called to process Packages or Sources files:
+     - prevents paragraph parsing truncating on comments (Closes: #743174).
+     - fix parsing of paragraphs when separated by more whitespace than just a
+       newline (Closes: #655988). (Finally fixing interactions with devscripts'
+       wrap-and-sort!)
+   * Parse foreign architecture (package:any) relationships and also other
+     multi-arch related relationships (Closes: #670679)
+   * Parse build-profiles syntax.
+ .
+   [ John Wright ]
+   * Fix a GPG validation bug.  With some trailing whitespace, the code
+     could be tricked into validating a signature, but using the bogus
+     data after the signed section (Closes: #695932).
+   * Drop support for python2.5.  (This allows us to do fewer import hacks
+     in deb822, and probably other modules as well.)
+   * Add a deb822.RestrictedWrapper class, for exposing read-only access
+     to a Deb822 instance's field values as strings, while restricting
+     write access to some fields, which are exposed via properties.
+   * deb822.Deb822Dict.dump: Add a text_mode parameter for dumping to
+     file(-like) objects that assume text/unicode input.
+   * Add a copyright module, for parsing machine-readable debian/copyright
+     files (Closes: #671485).
+   * Make deb822 tests hermetic with respect to debian-keyring updates
+     (Closes: #760488).
+Checksums-Sha1:
+ 12dfdc516cca4cb97db35d2058b557ce86ab4226 1861 python-debian_0.1.23.dsc
+ ad2363927297a16bd152f08ff268b2af147731d5 288092 python-debian_0.1.23.tar.xz
+ a9808610d3fe406bb66e6bbdd5c69201b669ae13 70630 python-debian_0.1.23_all.deb
+ 61b44f5a2700e399d78a2c8ee795fe25d40cd08d 50384 python3-debian_0.1.23_all.deb
+Checksums-Sha256:
+ e24ef01c4d285c442577b53644211510c10767a58a6e1c8df2aa7c1b1332b00b 1861 python-debian_0.1.23.dsc
+ cb057ba2003fd7738f295b15a1e24f1983ce8bc3725613b4ce80013a55fb0b56 288092 python-debian_0.1.23.tar.xz
+ d55ecce6400a5f8504aa8d8ce76846aab5cebea6003a1e1a240ba1f93e6f88f6 70630 python-debian_0.1.23_all.deb
+ ebed90218dde5f9a5a5d598db3533208a0bf9683b717c2c597ab95377ca0d69b 50384 python3-debian_0.1.23_all.deb
+Files:
+ 7d81d9acc4168890e10a6f4902c53ecc 70630 python optional python-debian_0.1.23_all.deb
+ 2ae2e6469ffb87c8d0ea6582c22bd48b 50384 python optional python3-debian_0.1.23_all.deb
+ b3e9d9f696604ab144d5aed316c808dc 1861 python optional python-debian_0.1.23.dsc
+ f5458e5d1379feaf5a837e7f866b1b7a 288092 python optional python-debian_0.1.23.tar.xz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBCgAGBQJUEUIQAAoJEOdiPQlLQO87z2cH/3LroAIC4gDT+ux4K11jwaRX
+swQId21MKCOxDncnNUx+cwPqUi0YuHhOhp8XEsy7/7g1gDSddJJ+2WkpN0PKgLSx
+2lyLtF6BJ+JykAOV3sPz993q5b0+7QJ3/3Fwq2ICzS0bFsLB9XpsRK75uogr6knp
+gfOnEn03cyK5JurRdmmK1w0wVtS7ZyktaGYlknZi7xxwIb+IbVgDebpPxHj3TDzC
+U9QHA5ZVziuNPeVWqgimk8BWJH0ngL+MRc5frAed4M6Zyd+mug1IetJzxaD+mBzm
+W54HlaARddfiVYnXR8FaQVXEYOj76xirQf1jAaLxizwmz4C6zt6YqD2CikmTW7w=
+=jb3+
+-----END PGP SIGNATURE-----

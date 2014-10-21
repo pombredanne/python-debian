@@ -1219,14 +1219,18 @@ class _gpg_multivalued(_multivalued):
             sequence = kwargs.get("sequence", None)
 
         if sequence is not None:
+            # If the input is a unicode object or a file opened in text mode,
+            # we'll need to encode it back to bytes for gpg.  If it's not
+            # actually in the encoding that we guess, then this probably won't
+            # verify correctly, but this is the best we can reasonably manage.
+            # For accurate verification, the file should be opened in binary
+            # mode.
+            encoding = (getattr(sequence, 'encoding', None)
+                        or kwargs.get('encoding', 'utf-8') or 'utf-8')
             if isinstance(sequence, bytes):
                 self.raw_text = sequence
             elif isinstance(sequence, six.string_types):
-                # If the file is really in some other encoding, then this
-                # probably won't verify correctly, but this is the best we
-                # can reasonably manage.  For accurate verification, the
-                # file should be opened in binary mode.
-                self.raw_text = sequence.encode('utf-8')
+                self.raw_text = sequence.encode(encoding)
             elif hasattr(sequence, "items"):
                 # sequence is actually a dict(-like) object, so we don't have
                 # the raw text.
@@ -1234,7 +1238,8 @@ class _gpg_multivalued(_multivalued):
             else:
                 try:
                     gpg_pre_lines, lines, gpg_post_lines = \
-                            self.split_gpg_and_payload(sequence)
+                        self.split_gpg_and_payload(
+                            self._bytes(s, encoding) for s in sequence)
                 except EOFError:
                     # Empty input
                     gpg_pre_lines = lines = gpg_post_lines = []
@@ -1253,6 +1258,18 @@ class _gpg_multivalued(_multivalued):
                     kwargs["sequence"] = lines
 
         _multivalued.__init__(self, *args, **kwargs)
+
+    @staticmethod
+    def _bytes(s, encoding):
+        """Converts s to bytes if necessary, using encoding.
+
+        If s is already bytes type, returns it directly.
+        """
+        if isinstance(s, bytes):
+            return s
+        if isinstance(s, six.string_types):
+            return s.encode(encoding)
+        raise TypeError('bytes or unicode/string required')
 
 
 class Dsc(_gpg_multivalued):

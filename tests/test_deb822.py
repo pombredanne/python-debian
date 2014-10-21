@@ -943,6 +943,18 @@ Description: python modules to work with Debian-related data formats
         self.assertEqual(len(release['SHA512']), 61)
         self.assertEqual(release['SHA512'][0]['size'], '113433')
 
+    def test_changes_binary_mode(self):
+        """Trivial parse test for a signed file in binary mode"""
+        with io.open('test_Changes', 'rb') as f:
+            changes = deb822.Changes(f)
+        self.assertEqual('python-debian', changes['Source'])
+
+    def test_changes_text_mode(self):
+        """Trivial parse test for a signed file in text mode"""
+        with io.open('test_Changes', 'r', encoding='utf-8') as f:
+            changes = deb822.Changes(f)
+        self.assertEqual('python-debian', changes['Source'])
+
 
 class TestPkgRelations(unittest.TestCase):
     # TODO(jsw): Stop overriding this for Python versions that actually include
