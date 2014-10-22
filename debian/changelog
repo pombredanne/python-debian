@@ -1,9 +1,9 @@
-python-debian (0.1.25) UNRELEASED; urgency=medium
+python-debian (0.1.25) unstable; urgency=medium
 
   * deb822: More encoding gymnastics to support parsing signed files
     opened in text mode (Closes: #764380).
 
- -- John Wright <jsw@debian.org>  Mon, 20 Oct 2014 23:36:44 -0700
+ -- John Wright <jsw@debian.org>  Tue, 21 Oct 2014 22:32:26 -0700
 
 python-debian (0.1.24) unstable; urgency=medium
 
