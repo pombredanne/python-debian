@@ -1,4 +1,4 @@
-python-debian (0.1.26) UNRELEASED; urgency=medium
+python-debian (0.1.26) unstable; urgency=medium
 
   * Fix FTBFS with binutils >= 2.25-6 by turning off determinism in ar
     archives when building archives in the test suite, thanks to Dmitry
@@ -6,7 +6,7 @@ python-debian (0.1.26) UNRELEASED; urgency=medium
   * Require binutils >= 2.23 for building and in the autopkgtest tests to
     ensure that ar understands the option to suppress determinism.
 
- -- Stuart Prescott <stuart@debian.org>  Sat, 04 Apr 2015 00:31:11 +1100
+ -- Stuart Prescott <stuart@debian.org>  Sat, 04 Apr 2015 00:39:02 +1100
 
 python-debian (0.1.25) unstable; urgency=medium
 
