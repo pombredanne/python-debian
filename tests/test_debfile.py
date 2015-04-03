@@ -37,7 +37,7 @@ from debian import debfile
 class TestArFile(unittest.TestCase):
 
     def setUp(self):
-        os.system("ar r test.ar test_debfile.py test_changelog test_deb822.py >/dev/null 2>&1") 
+        os.system("ar rU test.ar test_debfile.py test_changelog test_deb822.py >/dev/null 2>&1")
         assert os.path.exists("test.ar")
         with os.popen("ar t test.ar") as ar:
             self.testmembers = [x.strip() for x in ar.readlines()]

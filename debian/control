@@ -11,6 +11,7 @@ Uploaders:
  John Wright <jsw@debian.org>,
  Stuart Prescott <stuart@debian.org>
 Build-Depends:
+ binutils (>= 2.23),
  debhelper (>= 9),
  dh-python,
  python-all (>= 2.6.6-3~),
