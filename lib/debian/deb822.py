@@ -638,7 +638,7 @@ class Deb822(Deb822Dict):
         lines = []
         gpg_post_lines = []
         state = b'SAFE'
-        gpgre = re.compile(br'^-----(?P<action>BEGIN|END) PGP (?P<what>[^-]+)-----\s*$')
+        gpgre = re.compile(br'^-----(?P<action>BEGIN|END) PGP (?P<what>[^-]+)-----[\r\t ]*$')
         # Include whitespace-only lines in blank lines to split paragraphs.
         # (see #715558)
         blank_line = re.compile(b'^\s*$')
