@@ -208,10 +208,10 @@ topline = re.compile(r'^(\w%(name_chars)s*) \(([^\(\) \t]+)\)'
 blankline = re.compile('^\s*$')
 change = re.compile('^\s\s+.*$')
 endline = re.compile('^ -- (.*) <(.*)>(  ?)((\w+\,\s*)?\d{1,2}\s+\w+\s+'
-            '\d{4}\s+\d{1,2}:\d\d:\d\d\s+[-+]\d{4}(\s+\([^\\\(\)]\))?\s*)$')
+            '\d{4}\s+\d{1,2}:\d\d:\d\d\s+[-+]\d{4}\s*)$')
 endline_nodetails = re.compile('^ --(?: (.*) <(.*)>(  ?)((\w+\,\s*)?\d{1,2}'
                 '\s+\w+\s+\d{4}\s+\d{1,2}:\d\d:\d\d\s+[-+]\d{4}'
-                '(\s+\([^\\\(\)]\))?))?\s*$')
+                '))?\s*$')
 keyvalue= re.compile('^([-0-9a-z]+)=\s*(.*\S)$', re.IGNORECASE)
 value_re = re.compile('^([-0-9a-z]+)((\s+.*)?)$', re.IGNORECASE)
 xbcs_re = re.compile('^X[BCS]+-', re.IGNORECASE)
