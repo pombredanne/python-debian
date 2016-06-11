@@ -28,7 +28,7 @@ from debian.deb822 import Deb822
 
 DATA_PART = 'data.tar'      # w/o extension
 CTRL_PART = 'control.tar'
-PART_EXTS = ['gz', 'bz2', 'xz']  # possible extensions
+PART_EXTS = ['gz', 'bz2', 'xz', 'lzma']  # possible extensions
 INFO_PART = 'debian-binary'
 MAINT_SCRIPTS = ['preinst', 'postinst', 'prerm', 'postrm', 'config']
 
