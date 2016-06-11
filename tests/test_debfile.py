@@ -105,6 +105,17 @@ class TestArFile(unittest.TestCase):
 
 class TestDebFile(unittest.TestCase):
 
+    test_debs = [
+            'test.deb',
+            'test-broken.deb',
+        ]
+    test_compressed_debs = [
+            'test-bz2.deb',
+            'test-xz.deb',
+            'test-uncompressed.deb',
+            'test-uncompressed-ctrl.deb',
+        ]
+
     def setUp(self):
         def uudecode(infile, outfile):
             uu_deb = open(infile, 'rb')
@@ -113,60 +124,40 @@ class TestDebFile(unittest.TestCase):
             uu_deb.close()
             bin_deb.close()
 
-        self.debname = 'test.deb'
-        self.broken_debname = 'test-broken.deb'
-        self.bz2_debname = 'test-bz2.deb'
-        self.xz_debname = 'test-xz.deb'
-        self.uncompressed_debname = 'test-uncompressed.deb'
-        uudecode('test.deb.uu', self.debname)
-        uudecode('test-broken.deb.uu', self.broken_debname)
-        uudecode('test-bz2.deb.uu', self.bz2_debname)
-        uudecode('test-xz.deb.uu', self.xz_debname)
-        uudecode('test-uncompressed.deb.uu', self.uncompressed_debname)
+        self.debfiles = {}
+        for package in self.test_debs + self.test_compressed_debs:
+            uudecode('%s.uu' % package, package)
 
         self.debname = 'test.deb'
-        uu_deb = open('test.deb.uu', 'rb')
-        bin_deb = open(self.debname, 'wb')
-        uu.decode(uu_deb, bin_deb)
-        uu_deb.close()
-        bin_deb.close()
         self.d = debfile.DebFile(self.debname)
 
     def tearDown(self):
         self.d.close()
-        os.unlink(self.debname)
-        os.unlink(self.broken_debname)
-        os.unlink(self.bz2_debname)
-        os.unlink(self.xz_debname)
-        os.unlink(self.uncompressed_debname)
+        for package in self.test_debs + self.test_compressed_debs:
+            os.unlink(package)
 
     def test_missing_members(self):
-        self.assertRaises(debfile.DebError,
-                lambda _: debfile.DebFile(self.broken_debname), None)
+        with self.assertRaises(debfile.DebError):
+            debfile.DebFile('test-broken.deb')
 
-    def test_tar_uncompressed(self):
-        un_deb = debfile.DebFile(self.uncompressed_debname)
-        # random test on the data part (which is uncompressed), just to check
-        # if we can access its content
-        self.assertEqual(os.path.normpath(un_deb.data.tgz().getnames()[10]),
-                         os.path.normpath('./usr/share/locale/bg/'))
-        un_deb.close()
+    def test_data_compression(self):
+        for package in self.test_compressed_debs:
+            deb = debfile.DebFile(package)
+            # random test on the data part, just to check that content access
+            # is OK
+            self.assertEqual(os.path.normpath(deb.data.tgz().getnames()[10]),
+                             os.path.normpath('./usr/share/locale/bg/'),
+                             "Data part failed on deb %s" % package)
+            deb.close()
 
-    def test_tar_bz2(self):
-        bz2_deb = debfile.DebFile(self.bz2_debname)
-        # random test on the data part (which is bzipped), just to check if we
-        # can access its content
-        self.assertEqual(os.path.normpath(bz2_deb.data.tgz().getnames()[10]),
-                         os.path.normpath('./usr/share/locale/bg/'))
-        bz2_deb.close()
-
-    def test_tar_xz(self):
-        xz_deb = debfile.DebFile(self.xz_debname)
-        # random test on the data part (which is xz), just to check if we
-        # can access its content
-        self.assertEqual(os.path.normpath(xz_deb.data.tgz().getnames()[10]),
-                         os.path.normpath('./usr/share/locale/bg/'))
-        xz_deb.close()
+    def test_control_compression(self):
+        for package in self.test_compressed_debs:
+            deb = debfile.DebFile(package)
+            # random test on the control part
+            self.assertEqual(os.path.normpath(deb.control.tgz().getnames()[1]),
+                             'md5sums',
+                             "Control part failed on deb %s" % package)
+            deb.close()
 
     def test_data_names(self):
         """ test for file list equality """ 

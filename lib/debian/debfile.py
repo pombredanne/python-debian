@@ -75,7 +75,7 @@ class DebPart(object):
         if self.__tgz is None:
             name = self.__member.name
             extension = os.path.splitext(name)[1][1:]
-            if extension in PART_EXTS or name == DATA_PART:
+            if extension in PART_EXTS or name == DATA_PART or name == CTRL_PART:
                 # Permit compressed members and also uncompressed data.tar
                 if sys.version_info < (3, 3) and extension == 'xz':
                     try:
@@ -274,7 +274,8 @@ class DebFile(ArFile):
 
         def compressed_part_name(basename):
             candidates = [ '%s.%s' % (basename, ext) for ext in PART_EXTS ]
-            if basename == DATA_PART: # also permit uncompressed data.tar
+            # also permit uncompressed data.tar and control.tar
+            if basename == DATA_PART or basename == CTRL_PART:
                 candidates.append(basename)
             parts = actual_names.intersection(set(candidates))
             if not parts:
