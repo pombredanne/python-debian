@@ -32,6 +32,7 @@ try:
 except ImportError:
     from io import BytesIO, StringIO
 
+import apt_pkg
 import six
 
 sys.path.insert(0, '../lib')
@@ -905,22 +906,21 @@ Description: python modules to work with Debian-related data formats
     def test_iter_paragraphs_comments_use_apt_pkg(self):
         """ apt_pkg does not support comments within multiline fields
 
-        This test actually checks that that the file is *incorrectly* parsed
-        to ensure that this behaviour doesn't unknowingly and accidentally
-        change in the future.
+        This test checks that a file with comments inside multiline fields
+        generates an error from the apt_pkg parser.
 
         See also https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=750247#35
+                 https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=807351
         """
-        fd, filename = tempfile.mkstemp()
-        fp = os.fdopen(fd, 'wb')
-        fp.write(UNPARSED_PARAGRAPHS_WITH_COMMENTS.encode('utf-8'))
-        fp.close()
-
         try:
+            fd, filename = tempfile.mkstemp()
+            fp = os.fdopen(fd, 'wb')
+            fp.write(UNPARSED_PARAGRAPHS_WITH_COMMENTS.encode('utf-8'))
+            fp.close()
+
             with open_utf8(filename) as fh:
-                paragraphs = list(deb822.Deb822.iter_paragraphs(
-                    fh, use_apt_pkg=True))
-                self.assertEqual(paragraphs[0]['Build-Depends'], 'debhelper,')
+                with self.assertRaises(apt_pkg.Error):
+                    list(deb822.Deb822.iter_paragraphs(fh, use_apt_pkg=True))
         finally:
             os.remove(filename)
 
