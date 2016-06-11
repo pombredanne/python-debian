@@ -27,8 +27,8 @@ Build-Depends:
  python3-setuptools,
  python3-six (>> 1.4~)
 Standards-Version: 3.9.5
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-python-debian/python-debian.git
-Vcs-Git: git://anonscm.debian.org/pkg-python-debian/python-debian.git
+Vcs-Browser: https://anonscm.debian.org/git/pkg-python-debian/python-debian.git
+Vcs-Git: https://anonscm.debian.org/git/pkg-python-debian/python-debian.git
 X-Python-Version: >= 2.6
 XS-Testsuite: autopkgtest
 
