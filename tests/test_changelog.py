@@ -259,6 +259,19 @@ haskell-src-exts (1.8.2-2) unstable; urgency=low
         f.close()
         self.assertEqual([str(b) for b in c._blocks], [str(b) for b in c])
 
+    def test_block_access(self):
+        """ test random access to changelog entries """
+        f = open('test_changelog')
+        c = changelog.Changelog(f)
+        f.close()
+        self.assertEqual(str(c[2].version), '1.4.0-2',
+                         'access by sequence number')
+        self.assertEqual(str(c['1.4.0-1'].version), '1.4.0-1',
+                         'access by version string')
+        self.assertEqual(str(c[changelog.Version('1.3.5-1.1')].version),
+                         '1.3.5-1.1',
+                         'access by Version object')
+
     def test_len(self):
         f = open('test_changelog')
         c = changelog.Changelog(f)

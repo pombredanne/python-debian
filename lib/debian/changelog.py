@@ -522,6 +522,17 @@ class Changelog(object):
     def __iter__(self):
         return iter(self._blocks)
 
+    def __getitem__(self, n):
+        """ select a changelog entry by number, version string, or Version
+
+        :param n: integer or str representing a version or Version object
+        """
+        if type(n) is int:
+            return self._blocks[n]
+        elif type(n) is str:
+            return self[Version(n)]
+        return self._blocks[self.versions.index(n)]
+
     def __len__(self):
         return len(self._blocks)
 
