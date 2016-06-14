@@ -6,6 +6,8 @@ python-debian (0.1.28) UNRELEASED; urgency=medium
   * Add support for uncompressed control.tar deb member (Closes: #761298).
   * Bump standards-version to 3.9.8 (no changes required).
   * Update Vcs URLs to https ones.
+  * Remove support for broken timezone names from changelog parsing, with
+    thanks to Guillem Jover for the patch (Closes: #792415).
 
  -- Stuart Prescott <stuart@debian.org>  Sun, 12 Jun 2016 00:21:09 +1000
 
