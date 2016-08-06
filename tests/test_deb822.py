@@ -404,10 +404,8 @@ class TestDeb822(unittest.TestCase):
             deb822_ = deb822.Deb822(unparsed_with_gpg.splitlines())
             self.assertWellParsed(deb822_, PARSED_PACKAGE)
 
+    @unittest.skipUnless(os.path.exists('/usr/bin/gpgv'), "gpgv not installed")
     def test_gpg_info(self):
-        if not os.path.exists('/usr/bin/gpgv'):
-            return
-
         unparsed_with_gpg = SIGNED_CHECKSUM_CHANGES_FILE % CHECKSUM_CHANGES_FILE
         deb822_from_str = deb822.Dsc(unparsed_with_gpg)
         result_from_str = deb822_from_str.get_gpg_info(keyrings=[KEYRING])
@@ -435,10 +433,8 @@ class TestDeb822(unittest.TestCase):
             self.assertEqual(result['VALIDSIG'], valid['VALIDSIG'])
             self.assertEqual(result['SIG_ID'][1:], valid['SIG_ID'][1:])
 
+    @unittest.skipUnless(os.path.exists('/usr/bin/gpgv'), "gpgv not installed")
     def test_gpg_info2(self):
-        if not os.path.exists('/usr/bin/gpgv'):
-            return
-
         with open('test_Dsc.badsig', mode='rb') as f:
             dsc = deb822.Dsc(f)
             i = dsc.get_gpg_info(keyrings=[KEYRING])
@@ -1180,14 +1176,10 @@ class TestPkgRelations(unittest.TestCase):
         self.assertEqual(term[1], 'cross')
 
 
+@unittest.skipUnless(os.path.exists('/usr/bin/gpgv'), "gpgv not installed")
 class TestGpgInfo(unittest.TestCase):
 
     def setUp(self):
-        # These tests can only run with gpgv available.  When we can use Python
-        # >= 2.7, we can use the skip decorator; for now just check in each
-        # test method whether we should actually run.
-        self.should_run = os.path.exists('/usr/bin/gpgv')
-
         self.data = SIGNED_CHECKSUM_CHANGES_FILE % CHECKSUM_CHANGES_FILE
         self.data = self.data.encode()
         self.valid = {
@@ -1212,32 +1204,20 @@ class TestGpgInfo(unittest.TestCase):
         self.assertEqual(gpg_info['SIG_ID'][1:], self.valid['SIG_ID'][1:])
 
     def test_from_sequence_string(self):
-        if not self.should_run:
-            return
-
         gpg_info = deb822.GpgInfo.from_sequence(self.data, keyrings=[KEYRING])
         self._validate_gpg_info(gpg_info)
 
     def test_from_sequence_newline_terminated(self):
-        if not self.should_run:
-            return
-
         sequence = BytesIO(self.data)
         gpg_info = deb822.GpgInfo.from_sequence(sequence, keyrings=[KEYRING])
         self._validate_gpg_info(gpg_info)
 
     def test_from_sequence_no_newlines(self):
-        if not self.should_run:
-            return
-
         sequence = self.data.splitlines()
         gpg_info = deb822.GpgInfo.from_sequence(sequence, keyrings=[KEYRING])
         self._validate_gpg_info(gpg_info)
 
     def test_from_file(self):
-        if not self.should_run:
-            return
-
         fd, filename = tempfile.mkstemp()
         fp = os.fdopen(fd, 'wb')
         fp.write(self.data)
