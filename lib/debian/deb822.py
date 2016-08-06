@@ -806,6 +806,13 @@ class GpgInfo(dict):
             else:
                 value = l[s+1:].split(' ')
 
+            # Skip headers in the gpgv output that are not interesting
+            # note NEWSI is actually NEWSIG but the above parsing loses the 'G'
+            # if no keyid is included in the message. See
+            # /usr/share/doc/gnupg/DETAILS.gz
+            if key in ('NEWSI', 'NEWSIG', 'KEY_CONSIDERED', 'PROGRESS'):
+                continue
+
             n[key] = value
         return n 
 
