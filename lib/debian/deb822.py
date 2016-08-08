@@ -1276,7 +1276,7 @@ class _gpg_multivalued(_multivalued):
             return s
         if isinstance(s, six.string_types):
             return s.encode(encoding)
-        raise TypeError('bytes or unicode/string required')
+        raise TypeError('bytes or unicode/string required, not %s' % type(s))
 
 
 class Dsc(_gpg_multivalued):
