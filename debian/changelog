@@ -1,3 +1,12 @@
+python-debian (0.1.29) unstable; urgency=medium
+
+  * Fix handling of gpgv output from gnupg 2 (Closes: #782904).
+  * Explain what type was passed when raising the TypeError, with thanks to
+    Chris Lamb <lamby@debian.org> for the patch (Closes: #833363).
+  * Include examples and extra docs in python3-debian package (Closes: #833368).
+
+ -- Stuart Prescott <stuart@debian.org>  Thu, 18 Aug 2016 23:27:48 +1000
+
 python-debian (0.1.28) unstable; urgency=medium
 
   * Change comment handling code in test suite to fix building with updated
