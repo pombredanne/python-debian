@@ -465,6 +465,16 @@ class TestDeb822(unittest.TestCase):
                             for d in deb822.Deb822.iter_paragraphs(text)])
             self.assertEqual(2, count)
 
+    def test_iter_paragraphs_bytes(self):
+        text = (UNPARSED_PACKAGE + '\n\n\n' + UNPARSED_PACKAGE)
+        if six.PY2:
+            binary = text
+        else:
+            binary = text.encode('utf-8')
+
+        for d in deb822.Deb822.iter_paragraphs(binary):
+            self.assertWellParsed(d, PARSED_PACKAGE)
+
     def test_iter_paragraphs_with_extra_whitespace(self):
         """ Paragraphs not elided when stray whitespace is between
 

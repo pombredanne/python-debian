@@ -381,7 +381,7 @@ class Deb822(Deb822Dict):
                     yield paragraph
 
         else:
-            if isinstance(sequence, six.string_types):
+            if isinstance(sequence, six.string_types + (six.binary_type,)):
                 sequence = sequence.splitlines()
             iterable = iter(sequence)
             while True:
