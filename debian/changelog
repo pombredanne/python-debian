@@ -1,3 +1,14 @@
+python-debian (0.1.30) unstable; urgency=medium
+
+  * Add missing chardet dependency in setup.py.in (Closes: #838695, #841071).
+  * Add stretch, buster and bullseye to known releases (Closes: #849058).
+  * Allow iter_paragraphs to accept bytes under Python 3 (Closes: #833375).
+  * Don't suppress ChangelogParseError in strict mode when reading in a
+    changelog via the constructor (Closes: #844026).
+  * Add experimental API for ftp-master archive removals data (Closes: #473793).
+
+ -- Stuart Prescott <stuart@debian.org>  Wed, 25 Jan 2017 12:18:27 +1100
+
 python-debian (0.1.29) unstable; urgency=medium
 
   * Fix handling of gpgv output from gnupg 2 (Closes: #782904).
