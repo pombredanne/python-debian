@@ -245,7 +245,7 @@ class Changelog(object):
 
     # TODO(jsw): Avoid masking the 'file' built-in.
     def __init__(self, file=None, max_blocks=None,
-                 allow_empty_author=False, strict=True, encoding='utf-8'):
+                 allow_empty_author=False, strict=False, encoding='utf-8'):
         """Initializer.
 
         Args:
@@ -264,12 +264,9 @@ class Changelog(object):
         self._blocks = []
         self.initial_blank_lines = []
         if file is not None:
-            try:
-                self.parse_changelog(file, max_blocks=max_blocks,
-                        allow_empty_author=allow_empty_author,
-                        strict=strict)
-            except ChangelogParseError:
-                pass
+            self.parse_changelog(file, max_blocks=max_blocks,
+                    allow_empty_author=allow_empty_author,
+                    strict=strict)
 
     def _parse_error(self, message, strict):
         if strict:

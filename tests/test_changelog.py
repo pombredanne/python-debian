@@ -28,6 +28,7 @@ from __future__ import absolute_import
 
 import sys
 import unittest
+import warnings
 
 import six
 
@@ -252,6 +253,23 @@ haskell-src-exts (1.8.2-2) unstable; urgency=low
         for block in c:
             self.assertEqual(bytes(block),
                              six.text_type(block).encode('latin1'))
+
+    def test_malformed_date(self):
+        c_text = """package (1.0-1) codename; urgency=medium
+
+  * minimal example reproducer of malformed date line
+
+ -- John Smith <john.smith@example.com> Tue, 27 Sep 2016 14:08:04 -0600
+ """
+        # In strict mode, exceptions should be raised by the malformed entry
+        with self.assertRaises(changelog.ChangelogParseError):
+            c = changelog.Changelog(c_text, strict=True)
+        # In non-strict mode, warnings should be emitted by the malformed entry
+        # (but assertWarns is python 3.2+ only)
+        if not six.PY2:
+            with self.assertWarns(Warning):
+                c = changelog.Changelog(c_text, strict=False)
+                self.assertEqual(len(c), 1)
 
     def test_block_iterator(self):
         f = open('test_changelog')
