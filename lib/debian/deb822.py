@@ -907,7 +907,7 @@ class PkgRelation(object):
             r'$')
     __comma_sep_RE = re.compile(r'\s*,\s*')
     __pipe_sep_RE = re.compile(r'\s*\|\s*')
-    __blank_sep_RE = re.compile(r'\s*')
+    __blank_sep_RE = re.compile(r'\s+')
     __restriction_sep_RE = re.compile(r'>\s*<')
     __restriction_RE = re.compile(
             r'(?P<enabled>\!)?'
